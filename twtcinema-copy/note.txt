@@ -1,3 +1,0 @@
-add libs:{
-   npm i react-simple-star-rating,
-}

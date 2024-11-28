@@ -1,8 +1,11 @@
+import logo from './movie-logo.jpg';
+import background from './background.jpg';
+import avatar from './noAvatar.jpg';
+
 const image = {
-    logo: require('./movie-logo.jpg'),
-    background: require('./background.jpg'),
-    avatar: require('./noAvatar.jpg'),
-    
+    logo,
+    background,
+    avatar,
 };
 
 export default image;
