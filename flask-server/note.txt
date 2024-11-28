@@ -1,0 +1,3 @@
+** task:
+    - complete upload video UI
+    - xóa UI: background, trailer video

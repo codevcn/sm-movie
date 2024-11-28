@@ -9,54 +9,32 @@ const Movies = new Schema(
       type: String,
       required: true,
     },
-    trailerCode: {
-      type: String,
-      required: true,
-    },
     id: {
       type: String,
       required: true,
     },
-    backdrop_path: {
+    PosterPath: {
       type: String,
       required: true,
     },
-    poster_path: {
+    type: {
       type: String,
+      enum: ["MOVIE", "SERIES"],
       required: true,
     },
-    genres: {
-      type: Array,
+    TotalEpisodes: {
+      type: Integer,
       required: true,
+      default: 0,
     },
-    category: {
-      type: String,
-      required: true,
+    ReleaseDate: {
+      type: Date,
     },
-    releaseDate: {
-      type: String,
-    },
-    ibmPoints: {
-      type: Number,
-    },
-    country: {
-      type: String,
-    },
-    overview: {
-      type: String,
-      required: true,
-    },
-    seasons: {
-      type: Number,
-      required: false,
-    },
-    episodes: {
-      type: Number,
-      required: false,
-    },
-    viewed: { type: Number, required: false, default: 0 },
-
-    slug: { type: String, slug: "name", unique: true },
+    CountryId: { type: Integer },
+    Language: { type: String },
+    Overview: { type: String },
+    Viewed: { type: Integer },
+    CreatedAt: { type: DateTime },
   },
   {
     timestamps: true,

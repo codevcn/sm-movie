@@ -12,6 +12,7 @@ const Comment = new Schema(
       type: String,
       required: true,
     },
+    CreatedAt: { type: DateTime, require: true, default: CURRENT_TIMESTAMP() },
   },
   {
     timestamps: true,

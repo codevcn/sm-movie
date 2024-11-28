@@ -3,8 +3,9 @@ const Schema = mongoose.Schema;
 
 const Favorite = new Schema(
   {
-    userId: { type: String, require: true },
-    movieId: { type: Schema.Types.ObjectId, ref: "movies", require: true },
+    userId: { type: Integer, require: true },
+    movieId: { type: Integer, ref: "movies", require: true },
+    CreatedAt: { type: DateTime, require: true, default: CURRENT_TIMESTAMP() },
   },
   {
     timestamps: true,
