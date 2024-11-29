@@ -19,10 +19,10 @@ class Users(db.Model):
         DateTime, nullable=True, server_default=func.now()
     )  # Ngày tạo (có thể rỗng)
 
-    Comments = relationship("Comments", back_populates="User")
-    Favorites = relationship("FavoriteList", back_populates="User")
-    Ratings = relationship("Rating", back_populates="User")
-    WatchHistories = relationship("WatchHistory", back_populates="User")
+    Comments = relationship("Comments", back_populates="User", lazy="dynamic")
+    Favorites = relationship("FavoriteList", back_populates="User", lazy="dynamic")
+    Ratings = relationship("Rating", back_populates="User", lazy="dynamic")
+    WatchHistories = relationship("WatchHistory", back_populates="User", lazy="dynamic")
 
     def __repr__(self):
         return f"<Users(Id={self.Id}, Name='{self.Name}', Email='{self.Email}')>"

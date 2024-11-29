@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Img } from '~/apiService/instance';
-import TrailerVideo from '~/layout/component/TralierVideo';
 
 import styles from './Infor.module.scss';
 import classNames from 'classnames/bind';
@@ -12,6 +12,7 @@ import { addFavouriteMovie, getFavoritesMovies } from '~/apiService/user';
 import SimilarMovie from '../SimilarMovie';
 import { getMulti } from '~/apiService/genres';
 import { Link, useNavigate } from 'react-router-dom';
+import moment from 'moment';
 
 const cs = classNames.bind(styles);
 
@@ -19,7 +20,7 @@ function InforDetail({ width, movieDetail }) {
     const { showToastMessage } = useContext(AuthContext);
     const [genres, setGenres] = useState([]);
     const navigate = useNavigate();
-
+    console.log('>>> details:', movieDetail);
     const user = JSON.parse(localStorage.getItem('user'));
     const [userFavoriteMovies, setUserFavoriteMovies] = useState([]);
 
@@ -64,27 +65,24 @@ function InforDetail({ width, movieDetail }) {
         };
         getGenres();
     }, []);
+
     return (
         <div>
             <div className={cs('contain')}>
-                <img
-                    src={Img.posterImg(movieDetail.poster_path || movieDetail.backdrop_path)}
-                    className={cs('poster')}
-                    alt=""
-                />
+                <img src={Img.posterImg(movieDetail.PosterPath)} className={cs('poster')} alt="" />
                 <div className={cs('content')}>
-                    <h2 className={cs('title')}>{movieDetail.name} </h2>
+                    <h2 className={cs('title')}>{movieDetail.Name} </h2>
                     <div className={cs('genres')}>
                         {genres.map((genre, index) => (
-                            <Link key={index} to={`/genres/${genre.name}/${genre.id}`}>
-                                <span className={cs('genres-item')}>{genre.name}</span>
+                            <Link key={index} to={`/genres/${genre.Name}/${genre.Id}`}>
+                                <span className={cs('genres-item')}>{genre.Name}</span>
                             </Link>
                         ))}
                     </div>
 
                     <div className={cs('Infor')}>
                         <div className={width < 740 ? cs('wrapWatchFav') : 'btnOnly'}>
-                            {userFavoriteMovies.includes(movieDetail._id) ? (
+                            {userFavoriteMovies.includes(movieDetail.Id) ? (
                                 <button
                                     className={cs('btnFavorite')}
                                     onClick={handleAddFavoriteMovie}
@@ -117,7 +115,7 @@ function InforDetail({ width, movieDetail }) {
                                 <button
                                     className={cs('playBtn')}
                                     onClick={() =>
-                                        navigate(`/${movieDetail.category}/${movieDetail.id}/watch/${movieDetail.slug}`)
+                                        navigate(`/${movieDetail.Category}/${movieDetail.Id}/watch/${movieDetail.Slug}`)
                                     }
                                 >
                                     <FontAwesomeIcon className={cs('icon')} icon={faPlay} />
@@ -127,23 +125,19 @@ function InforDetail({ width, movieDetail }) {
                         </div>
 
                         <h2 className={cs('titleInfor')}>Thông tin</h2>
-                        <span>{`Ngày Phát Hành : ${movieDetail.releaseDate}`}</span>
-                        <span>{`Điểm Đánh Giá IMDb : ${movieDetail.ibmPoints}`}</span>
-                        <span>{`Quốc Gia Sản Xuất : ${movieDetail.country || 'United States of America'}`}</span>
+                        <span>{`Ngày Phát Hành : ${moment(movieDetail.ReleaseDate).format('DD/MM/YYYY HH:mm')}`}</span>
+                        <span>{`Điểm Đánh Giá IMDb : ${movieDetail.IbmPoints}`}</span>
+                        <span>{`Quốc Gia Sản Xuất : ${movieDetail.Country || 'United States of America'}`}</span>
                     </div>
                 </div>
             </div>
             <div className={cs('summary')}>
                 <h4 className={cs('titleOverview')}>Tóm tắt</h4>
-                <p className={cs('overview')}>{movieDetail.overview}</p>
-            </div>
-            <div className={cs('Trailer')}>
-                <h4 className={cs('titleOverview')}>Trailer</h4>
-                <TrailerVideo movieDetail={movieDetail} />
+                <p className={cs('overview')}>{movieDetail.Overview}</p>
             </div>
             <div className={cs('Similar')}>
                 <h4 className={cs('titleOverview')}>Đề xuất</h4>
-                <SimilarMovie category={movieDetail.category} slug={movieDetail.slug} />
+                <SimilarMovie category={movieDetail.Category} slug={movieDetail.Slug} />
             </div>
         </div>
     );

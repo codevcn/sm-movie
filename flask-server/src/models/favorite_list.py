@@ -16,8 +16,8 @@ class FavoriteList(db.Model):
         DateTime, nullable=False, server_default=func.now()
     )  # Trường `CreatedAt`, mặc định là thời gian hiện tại
 
-    User = relationship("Users", back_populates="Favorites")
-    Movie = relationship("Movies", back_populates="FavoritesByUser")
+    User = relationship("Users", back_populates="Favorites", uselist=False)
+    Movie = relationship("Movies", back_populates="FavoritesByUser", uselist=False)
 
     def __repr__(self):
         return f"<FavoriteList(UserId={self.UserId},MovieId={self.MovieId})>"

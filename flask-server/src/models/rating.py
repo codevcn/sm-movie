@@ -17,8 +17,8 @@ class Rating(db.Model):
         DateTime, nullable=False, server_default=func.now()
     )  # Trường `CreatedAt`, mặc định là thời gian hiện tại
 
-    User = relationship("Users", back_populates="Ratings")
-    Movie = relationship("Movies", back_populates="Ratings")
+    User = relationship("Users", back_populates="Ratings", uselist=False)
+    Movie = relationship("Movies", back_populates="Ratings", uselist=False)
 
     def __repr__(self):
         return f"<Rating(Rating={self.Rating},UserId={self.UserId},MovieId={self.MovieId})>"

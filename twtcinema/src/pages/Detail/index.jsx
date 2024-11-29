@@ -12,19 +12,19 @@ import InforDetail from '~/layout/component/InforDetail';
 const cs = classNames.bind(styles);
 
 function Detail() {
-    const { category, slug } = useParams();
+    const { category, id } = useParams();
     const [movieDetail, setMovieDetail] = useState([]);
     const [loading, setLoading] = useState(true);
     const [width, setWidth] = useState(window.innerWidth);
 
     useEffect(() => {
         async function getDeTailMovie() {
-            const result = await requestApi.getDetails(slug);
+            const result = await requestApi.getDetails(id);
             setMovieDetail(result.data);
             setLoading(false);
         }
         getDeTailMovie();
-    }, [slug]);
+    }, [id]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -47,12 +47,14 @@ function Detail() {
                     <div
                         className={cs('backgroudImg')}
                         style={{
-                            backgroundImage: `url("${Img.baseImg(movieDetail.backdrop_path)}")`,
+                            backgroundImage: `url("${Img.baseImg(
+                                'https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2ltcGxlJTIwd2FsbHBhcGVyfGVufDB8fDB8fHww',
+                            )}")`,
                         }}
                     >
                         {width > 740 && (
                             <Link
-                                to={`/${movieDetail.category || category}/${movieDetail.id}/watch/${movieDetail.slug}`}
+                                to={`/${movieDetail.Type || category}/${movieDetail.Id}/watch/${movieDetail.Slug}`}
                                 className={cs('playBtn')}
                             >
                                 <FontAwesomeIcon className={cs('icon')} icon={faPlayCircle} />
@@ -68,15 +70,3 @@ function Detail() {
 }
 
 export default Detail;
-
-// {id && (
-//     // eslint-disable-next-line jsx-a11y/iframe-has-title
-//     <iframe
-//         className={cs('videofilm')}
-//         src={`https://www.2embed.to/embed/tmdb/movie?id=${id ?? 1}`}
-//         width="100%"
-//         height="500px"
-//         allowFullScreen
-//         frameBorder="0"
-//     ></iframe>
-// )}

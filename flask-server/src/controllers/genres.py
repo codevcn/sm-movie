@@ -136,6 +136,7 @@ def create_genre():
             200,
         )
     except Exception as e:
+        print(">>> err:", e)
         return (
             jsonify(
                 {

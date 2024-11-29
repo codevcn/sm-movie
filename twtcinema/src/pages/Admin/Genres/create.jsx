@@ -33,11 +33,11 @@ const CreateGenres = () => {
             <Form className={cs('genres_form')} onSubmit={handleSubmit(Onsubmit)}>
                 <Form.Group className="mb-3">
                     <Form.Label>Id</Form.Label>
-                    <Form.Control required type="text" {...register('id')} />
+                    <Form.Control required type="text" {...register('Id')} />
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Tên thể loại</Form.Label>
-                    <Form.Control required type="text" {...register('name')} />
+                    <Form.Control required type="text" {...register('Name')} />
                 </Form.Group>
                 <button type="submit" className={cs('movie_btn_submit')}>
                     Thêm thể loại

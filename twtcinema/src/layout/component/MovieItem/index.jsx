@@ -10,15 +10,15 @@ const cs = classNames.bind(styles);
 
 function MovieItem({ category, list, className }) {
     return (
-        <Link to={`/${category ?? 'tv'}/${list.slug}`} className={cs('card', className)}>
+        <Link to={`/${category ?? 'tv'}/${list.Id}`} className={cs('card', className)}>
             <LazyLoad threshold={0.8}>
-                <img src={Img.posterImg(list.poster_path)} style={{width : '100%'}} alt="" />
+                <img src={Img.posterImg(list.PosterPath)} style={{ width: '100%' }} alt="" />
             </LazyLoad>
             <div className={cs('rate')}>
-                <span>{list.ibmPoints}</span>
+                <span>{list.IbmPoints}</span>
                 <FontAwesomeIcon className={cs('icon')} icon={faStar} />
             </div>
-            <p>{list.title || list.name}</p>
+            <p>{list.Title || list.Name}</p>
         </Link>
     );
 }

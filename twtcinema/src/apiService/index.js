@@ -21,8 +21,8 @@ const requestApi = {
         const url = '/get-all';
         return instance.get(url, params); //?keyword=
     },
-    getDetails(slug) {
-        const url = `/get-detail/${slug}`;
+    getDetails(id) {
+        const url = `/get-detail/${id}`;
         return instance.get(url);
     },
     getAll(currPage, category) {

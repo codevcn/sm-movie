@@ -40,7 +40,7 @@ function Dashboard() {
                     Quản lí người dùng
                 </NavLink>
 
-                <button className={cs('btn')}>
+                <button className={cs('btn-logout-wrapper')}>
                     <a
                         href="/movie"
                         onClick={() => {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import styles from './Genres.module.scss';
 import classNames from 'classnames/bind';
 import { Button, Table } from 'react-bootstrap';
@@ -16,7 +17,7 @@ function GenresPage() {
 
     const getGenres = async () => {
         try {
-            const res = await getAll(currPage,15);
+            const res = await getAll(currPage, 15);
             if (res.success) {
                 setGenres(res.data);
                 setPages(res.pages);
@@ -62,10 +63,10 @@ function GenresPage() {
                             {genres.map((item, index) => (
                                 <tr key={index}>
                                     <td className="text-center">{index + 1}</td>
-                                    <td className="text-center">{item.name}</td>
+                                    <td className="text-center">{item.Name}</td>
                                     <td className="text-center">
-                                        <Link to={`/admin/dashboard/genres/edit/${item._id}`}>Sửa</Link>
-                                        <Button variant="danger" onClick={() => handleDeleteGenres(item._id)}>
+                                        <Link to={`/admin/dashboard/genres/edit/${item.Id}`}>Sửa</Link>
+                                        <Button variant="danger" onClick={() => handleDeleteGenres(item.Id)}>
                                             Xoá
                                         </Button>
                                     </td>

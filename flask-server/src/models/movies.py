@@ -24,12 +24,14 @@ class Movies(db.Model):
     CreatedAt = Column(DateTime, nullable=True)  # Ngày tạo (có thể rỗng)
     Slug = Column(String(255), nullable=False)  # Slug của phim
 
-    Country = relationship("Countries", back_populates="Movies")
-    Genres = relationship("MovieGenres", back_populates="Movie")
-    Comments = relationship("Comments", back_populates="Movie")
-    Episodes = relationship("Episodes", back_populates="Movie")
-    FavoritesByUser = relationship("FavoriteList", back_populates="Movie")
-    Ratings = relationship("Rating", back_populates="Movie")
+    Country = relationship("Countries", back_populates="Movies", uselist=False)
+    Genres = relationship("MovieGenres", back_populates="Movie", lazy="dynamic")
+    Comments = relationship("Comments", back_populates="Movie", lazy="dynamic")
+    Episodes = relationship("Episodes", back_populates="Movie", lazy="dynamic")
+    FavoritesByUser = relationship(
+        "FavoriteList", back_populates="Movie", lazy="dynamic"
+    ) 
+    Ratings = relationship("Rating", back_populates="Movie", lazy="dynamic")
 
     def __repr__(self):
         return (
@@ -46,7 +48,7 @@ class Movies(db.Model):
             "TotalEpisodes": self.TotalEpisodes,
             "ReleaseDate": self.ReleaseDate,
             "IbmPoints": self.IbmPoints,
-            "CountryId": self.CountryId,
+            "Country": self.Country,
             "Language": self.Language,
             "Overview": self.Overview,
             "Viewed": self.Viewed,

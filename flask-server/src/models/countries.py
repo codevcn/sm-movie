@@ -11,7 +11,7 @@ class Countries(db.Model):
     )  # Tạo khóa chính tự động tăng
     Name = Column(String(255), nullable=False)  # Trường `Name`, không được để trống
 
-    Movies = relationship("Movies", back_populates="Country")
+    Movies = relationship("Movies", back_populates="Country", lazy="dynamic")
 
     def __repr__(self):
         return f"<Countries(Name={self.Name})>"

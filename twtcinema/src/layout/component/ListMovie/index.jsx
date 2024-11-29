@@ -32,8 +32,8 @@ function ListMovie({ category, type }) {
                 {loading
                     ? Array(5)
                           .fill(7)
-                          .map((v,i) => (
-                              <SwiperSlide key ={i} className={cs('swiperitem_ske')}>
+                          .map((v, i) => (
+                              <SwiperSlide key={i} className={cs('swiperitem_ske')}>
                                   <Skeleton className={cs('skeleton-movie-item')} />
                               </SwiperSlide>
                           ))

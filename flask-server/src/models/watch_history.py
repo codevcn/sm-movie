@@ -20,8 +20,8 @@ class WatchHistory(db.Model):
         DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
     )  # Trường `UpdatedAt`, cập nhật tự động
 
-    User = relationship("Users", back_populates="WatchHistories")
-    Episode = relationship("Episodes", back_populates="WatchHistories")
+    User = relationship("Users", back_populates="WatchHistories", uselist=False)
+    Episode = relationship("Episodes", back_populates="WatchHistories", uselist=False)
 
     def __repr__(self):
         return f"<WatchHistory(UserId={self.UserId}, EpisodeId={self.EpisodeId}, ProgressTime={self.ProgressTime})>"

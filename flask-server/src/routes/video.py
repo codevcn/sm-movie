@@ -1,4 +1,4 @@
-from controllers.video import upload_video, test_handler
+from controllers.video import upload_video
 
 from flask import Blueprint, Flask
 
@@ -8,10 +8,7 @@ def register_video_routes(app: Flask):
     api_blueprint = Blueprint("video", __name__, url_prefix="/api/video")
 
     # Define API routes
-    api_blueprint.add_url_rule("/test", view_func=test_handler, methods=["GET"])
-    api_blueprint.add_url_rule(
-        "/upload", view_func=upload_video, methods=["POST"]
-    )
+    api_blueprint.add_url_rule("/upload", view_func=upload_video, methods=["POST"])
 
     # Register Blueprint
     app.register_blueprint(api_blueprint)

@@ -12,12 +12,13 @@ from datetime import datetime, timedelta
 def create():
     try:
         data = request.get_json()
-        data["genres"] = [str(genre) for genre in data.get("genres", [])]
-        movie = Movies(**data)
+        print(">>> data:", data["movie_info"])
+        movie = Movies(**data["movie_info"])
         db.session.add(movie)
         db.session.commit()
         return jsonify({"success": True, "message": "Thêm phim thành công"}), 200
     except SQLAlchemyError as e:
+        print(">>> err:", e)
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -133,9 +134,9 @@ def get_all_movies():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-def get_movie_detail(slug):
+def get_movie_detail(id):
     try:
-        movie = Movies.query.filter_by(Slug=slug).first()
+        movie = Movies.query.filter_by(Id=id).first()
         if movie:
             return jsonify({"success": True, "data": movie.to_dict()}), 200
         else:

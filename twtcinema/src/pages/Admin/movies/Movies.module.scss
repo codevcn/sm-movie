@@ -1,6 +1,8 @@
+$myvar-regular-bgcl: var(--primary);
+
 .movie {
     font-size: 16px;
-    padding-top: 20px;
+    padding: 20px;
 
     &_utils {
         display: flex;
@@ -28,10 +30,9 @@
         }
     }
 
-
-    &_select-form{
+    &_select-form {
         display: unset !important;
-        width: 200px!important;
+        width: 200px !important;
         height: 40px;
         margin-left: auto;
         font-size: 1.5rem !important;
@@ -70,15 +71,27 @@
         }
     }
 
-    &_btn_submit {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 20%;
+    .edit-video-info-submit-btn {
+        display: flex;
+        column-gap: 10px;
+        align-items: center;
+        border-radius: 5px;
+        background-color: $myvar-regular-bgcl;
+        padding: 10px 30px;
         color: white;
-        background-color: var(--primary);
-        padding: 8px;
-        border-radius: 7px;
+        font-weight: bold;
+        font-size: 1.5rem;
+        border: 2px $myvar-regular-bgcl solid;
+        margin: 0 auto;
+        margin-top: 15px;
+
+        i {
+            font-size: 1rem;
+        }
+
+        &:hover {
+            background-color: white;
+            color: $myvar-regular-bgcl;
+        }
     }
 }
-

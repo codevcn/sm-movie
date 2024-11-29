@@ -1,6 +1,5 @@
 .wrapper {
     display: flex;
-    height: 100vh;
 }
 
 .Sidebar {
@@ -10,6 +9,7 @@
     font-size: 1.4rem;
     background-color: rgba(22, 24, 35, 0.06);
     border-radius: 7px;
+    min-height: 100%;
 }
 
 .logo {
@@ -52,22 +52,23 @@
     }
 }
 
-.btn {
-    padding-top: 15px;
+.btn-logout-wrapper {
+    padding: 15px 0;
     border-top: 1px solid rgb(209, 207, 207);
     display: flex;
     justify-content: center;
-}
-.btn-logout {
-    display: block;
-    width: 40%;
-    color: white;
-    background-color: var(--primary);
-    padding: 8px;
-    border-radius: 7px;
 
-    &:hover {
-        opacity: 0.8;
+    .btn-logout {
+        display: block;
+        width: 40%;
+        color: white;
+        background-color: var(--primary);
+        padding: 8px;
+        border-radius: 7px;
+
+        &:hover {
+            opacity: 0.8;
+        }
     }
 }
 

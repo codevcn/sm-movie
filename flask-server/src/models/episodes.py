@@ -18,8 +18,10 @@ class Episodes(db.Model):
     Source = Column(String(255), nullable=False)  # Trường `Name`, không được để trống
     Duration = Column(DateTime, nullable=True)  # Không bắt buộc
 
-    Movie = relationship("Movies", back_populates="Episodes")
-    WatchHistories = relationship("WatchHistory", back_populates="Episode")
+    Movie = relationship("Movies", back_populates="Episodes", uselist=False)
+    WatchHistories = relationship(
+        "WatchHistory", back_populates="Episode", lazy="dynamic"
+    )
 
     def __repr__(self):
         return f"<Episodes(MovieId={self.MovieId},EpisodeNumber={self.EpisodeNumber}),Source={self.Source},Duration={self.Duration}>"
