@@ -2,18 +2,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudArrowUp, faRotate, faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { uploadVideo } from '../../../apiService/video';
+import { uploadEpisode } from '../../../apiService/episode';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
 import Plyr from 'plyr-react';
 import 'plyr-react/plyr.css';
 import './Upload-Video.scss';
+import { useNavigate } from 'react-router-dom';
 
 //https://res.cloudinary.com/doe8ogwij/video/upload/v1732879138/web-xem-phim/videos/akyz0w1cjjxjx6njp2rl.mp4
-export const UploadVideo = ({ setMovieURL, movieURL }) => {
+export const UploadVideo = ({ movieType, movieId }) => {
     const [video, setVideo] = useState();
     const [uploadStatus, setUploadStatus] = useState();
+    const [movieURL, setMovieURL] = useState();
+    const naviagte = useNavigate();
 
     const pickVideo = (e) => {
         const file = e.target.files[0];
@@ -22,7 +25,7 @@ export const UploadVideo = ({ setMovieURL, movieURL }) => {
         }
     };
 
-    const handleUploadVideo = async () => {
+    const handleUploadEpisode = async () => {
         if (!video) {
             toast.warn('Please select a file first!');
             return;
@@ -30,11 +33,13 @@ export const UploadVideo = ({ setMovieURL, movieURL }) => {
 
         const formData = new FormData();
         formData.append('file', video);
+        formData.append('movie_id', movieId);
+        formData.append('ep_num', 1);
 
         setUploadStatus('loading');
         let url = null;
         try {
-            const data = await uploadVideo(formData);
+            const data = await uploadEpisode(formData);
             url = data.url;
         } catch (error) {
             toast.error('Failed to upload video.');
@@ -138,13 +143,13 @@ export const UploadVideo = ({ setMovieURL, movieURL }) => {
                     </>
                 )}
             </label>
-            <button className="upload-video-submit-btn" onClick={handleUploadVideo}>
+            <button className="upload-video-submit-btn" onClick={handleUploadEpisode}>
                 {uploadStatus && uploadStatus === 'loading' ? (
                     <Spinner animation="border" role="status"></Spinner>
                 ) : (
                     <>
                         <FontAwesomeIcon icon={faFileArrowUp} />
-                        <span>Tải video lên hệ thống</span>
+                        <span>{'Tải lên tập ' + (movieType.toLowerCase() === 'movie' ? 'phim' : '1')}</span>
                     </>
                 )}
             </button>

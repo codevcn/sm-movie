@@ -19,7 +19,7 @@ import { Img } from '~/apiService/instance';
 const cs = classNames.bind(styles);
 
 const EditMovie = () => {
-    const { slug } = useParams();
+    const { id } = useParams();
     const [isTvShow, setIsTvShow] = useState(false);
     const [genres, setGenres] = useState([]);
     const [movie, setMovie] = useState();
@@ -35,13 +35,13 @@ const EditMovie = () => {
     useEffect(() => {
         const getMovie = async () => {
             try {
-                const result = await requestApi.getDetails(slug);
+                const result = await requestApi.getDetails(id);
                 if (result.success) {
                     setMovie(result.data);
                     if (Number.isInteger(result.data.genres[0])) {
                         result.data.genres = result.data.genres.map((genre) => genre.toString());
                     }
-                    result.data.seasons=result.data.seasons ? result.data.seasons : 1;
+                    result.data.seasons = result.data.seasons ? result.data.seasons : 1;
                     reset(result.data);
                 }
             } catch (error) {
@@ -49,7 +49,7 @@ const EditMovie = () => {
             }
         };
         getMovie();
-    }, [slug]);
+    }, [id]);
 
     const Onsubmit = async (data) => {
         data.ibmPoints = Number(data.ibmPoints);

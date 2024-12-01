@@ -54,7 +54,9 @@ function Detail() {
                     >
                         {width > 740 && (
                             <Link
-                                to={`/${movieDetail.Type || category}/${movieDetail.Id}/watch/${movieDetail.Slug}`}
+                                to={`/${movieDetail.Type.toLowerCase() || category.toLowerCase()}/watch/${
+                                    movieDetail.Id
+                                }`}
                                 className={cs('playBtn')}
                             >
                                 <FontAwesomeIcon className={cs('icon')} icon={faPlayCircle} />

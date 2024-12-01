@@ -20,7 +20,7 @@ function InforDetail({ width, movieDetail }) {
     const { showToastMessage } = useContext(AuthContext);
     const [genres, setGenres] = useState([]);
     const navigate = useNavigate();
-    console.log('>>> details:', movieDetail);
+
     const user = JSON.parse(localStorage.getItem('user'));
     const [userFavoriteMovies, setUserFavoriteMovies] = useState([]);
 
@@ -115,7 +115,7 @@ function InforDetail({ width, movieDetail }) {
                                 <button
                                     className={cs('playBtn')}
                                     onClick={() =>
-                                        navigate(`/${movieDetail.Category}/${movieDetail.Id}/watch/${movieDetail.Slug}`)
+                                        navigate(`/${movieDetail.Category.toLowerCase()}/watch/${movieDetail.Id}`)
                                     }
                                 >
                                     <FontAwesomeIcon className={cs('icon')} icon={faPlay} />
@@ -127,7 +127,7 @@ function InforDetail({ width, movieDetail }) {
                         <h2 className={cs('titleInfor')}>Thông tin</h2>
                         <span>{`Ngày Phát Hành : ${moment(movieDetail.ReleaseDate).format('DD/MM/YYYY HH:mm')}`}</span>
                         <span>{`Điểm Đánh Giá IMDb : ${movieDetail.IbmPoints}`}</span>
-                        <span>{`Quốc Gia Sản Xuất : ${movieDetail.Country || 'United States of America'}`}</span>
+                        <span>{`Quốc Gia Sản Xuất : ${movieDetail.Country.Name}`}</span>
                     </div>
                 </div>
             </div>

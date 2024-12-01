@@ -22,7 +22,7 @@ def register_movie_routes(app: Flask):
     # Định nghĩa các tuyến API
     api_blueprint.add_url_rule("/get-all", view_func=get_all_movies, methods=["GET"])
     api_blueprint.add_url_rule(
-        "/get-detail/<string:id>", view_func=get_movie_detail, methods=["GET"]
+        "/get-detail/<string:id>", view_func=get_movie_detail, methods=["GET"]  # ok
     )
     api_blueprint.add_url_rule(
         "/get-count-movie-month", view_func=count_movies_by_month, methods=["GET"]
@@ -36,7 +36,7 @@ def register_movie_routes(app: Flask):
     api_blueprint.add_url_rule("/create", view_func=create, methods=["POST"])
     api_blueprint.add_url_rule("/update/<int:id>", view_func=update, methods=["PUT"])
     api_blueprint.add_url_rule(
-        "/update-viewed/<string:slug>", view_func=update_viewed, methods=["PUT"]
+        "/update-viewed/<string:id>", view_func=update_viewed, methods=["PUT"]
     )
     api_blueprint.add_url_rule("/delete/<int:id>", view_func=delete, methods=["DELETE"])
     api_blueprint.add_url_rule(

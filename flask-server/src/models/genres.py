@@ -11,7 +11,7 @@ class Genres(db.Model):
     )  # Tạo khóa chính tự động tăng
     Name = Column(String(255), nullable=False)  # Trường `Name`, không được để trống
 
-    Movies = relationship("MovieGenres", back_populates="Genre", lazy="dynamic")
+    Movies = relationship("MovieGenres", back_populates="Genre", lazy="select")
 
     def __repr__(self):
         return f"<Genres(Name={self.Name})>"

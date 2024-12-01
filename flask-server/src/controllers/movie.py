@@ -7,18 +7,53 @@ from models.comments import Comments
 from models.favorite_list import FavoriteList
 from models.watch_history import WatchHistory
 from datetime import datetime, timedelta
+from sqlalchemy.exc import SQLAlchemyError
+from models.movie_genres import MovieGenres
 
 
 def create():
     try:
         data = request.get_json()
-        print(">>> data:", data["movie_info"])
+
+        # add movie
         movie = Movies(**data["movie_info"])
         db.session.add(movie)
         db.session.commit()
-        return jsonify({"success": True, "message": "Thêm phim thành công"}), 200
+
+        # add genres
+        movie_id = movie.Id
+        genreIds = data.get("genre_ids", [])
+
+        if not movie_id or not genreIds:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Thông tin phim và danh sách thể loại không được phép trống!",
+                    }
+                ),
+                400,
+            )
+        print(">>> genre ids:", genreIds)
+        # Tạo record trong bảng MovieGenres
+        movie_genre_records = [
+            MovieGenres(MovieId=movie_id, GenreId=genreId) for genreId in genreIds
+        ]
+        print(">>> movie_genre_records:", movie_genre_records)
+        db.session.add_all(movie_genre_records)
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "movie": movie.to_dict(),
+                    "message": "Thêm phim thành công",
+                }
+            ),
+            200,
+        )
     except SQLAlchemyError as e:
-        print(">>> err:", e)
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -50,9 +85,9 @@ def update(movie_id):
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-def update_viewed(slug):
+def update_viewed(id):
     try:
-        movie = Movies.query.filter_by(Slug=slug).first()
+        movie = Movies.query.filter_by(Id=id).first()
         if movie:
             movie.Viewed += 1
             db.session.commit()

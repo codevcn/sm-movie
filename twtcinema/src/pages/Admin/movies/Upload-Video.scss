@@ -11,7 +11,7 @@ $myvar-regular-bgcl: var(--primary);
     border: 1px black solid;
     width: 100%;
     height: 500px;
-    
+
     .plyr {
         height: 100%;
     }
@@ -31,6 +31,7 @@ $myvar-regular-bgcl: var(--primary);
     .upload-title {
         font-size: 2.5rem;
         font-weight: bold;
+        margin-top: 40px;
     }
 
     .video-picker {

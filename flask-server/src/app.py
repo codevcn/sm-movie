@@ -20,7 +20,7 @@ from models.favorite_list import FavoriteList
 from models.rating import Rating
 from models.watch_history import WatchHistory
 
-from routes.video import register_video_routes
+from routes.episode import register_video_routes
 from routes.user import register_user_routes
 from routes.auth import register_auth_routes
 from routes.comment import register_comment_routes

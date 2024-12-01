@@ -11,6 +11,6 @@ const allRoute = [
     { path: '/:category/:id', component: Detail },
     { path: '/:category/mores/:type', component: GridType },
     { path: '/genres/:name/:id', component: GridType },
-    { path: '/:category/:id/watch/:slug', component: WatchMovie },
+    { path: '/:category/watch/:id/', component: WatchMovie },
 ];
 export default allRoute;

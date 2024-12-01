@@ -22,8 +22,8 @@ class Comments(db.Model):
         DateTime, nullable=False, server_default=func.now()
     )  # Trường `CreatedAt`, mặc định là thời gian hiện tại
 
-    User = relationship("Users", back_populates="Comments", uselist=False)
-    Movie = relationship("Movies", back_populates="Comments", uselist=False)
+    User = relationship("Users", back_populates="Comments", lazy="select")
+    Movie = relationship("Movies", back_populates="Comments", lazy="select")
 
     def __repr__(self):
         return f"<Comments(UserId={self.UserId},MovieId={self.MovieId}),Content={self.Content}>"

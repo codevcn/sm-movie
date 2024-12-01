@@ -22,8 +22,8 @@ export const editMovie = (data, id) => {
     return instance.put(url, data);
 };
 
-export const updateView = (slug) => {
-    const url = '/update-viewed/' + slug;
+export const updateView = (id) => {
+    const url = '/update-viewed/' + id;
     return instance.put(url);
 };
 

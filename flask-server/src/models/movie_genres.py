@@ -16,8 +16,8 @@ class MovieGenres(db.Model):
         Integer, ForeignKey("Movies.Id"), nullable=False, primary_key=True
     )  # Trường `MovieId`, không được để trống
 
-    Movie = relationship("Movies", back_populates="Genres", uselist=False)
-    Genre = relationship("Genres", back_populates="Movies", uselist=False)
+    Movie = relationship("Movies", back_populates="Genres", lazy="select")
+    Genre = relationship("Genres", back_populates="Movies", lazy="select")
 
     def __repr__(self):
         return f"<MovieGenres(GenreId={self.GenreId},MovieId={self.MovieId})>"

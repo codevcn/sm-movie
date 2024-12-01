@@ -5,7 +5,6 @@ import classNames from 'classnames/bind';
 import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 
 import { createMovie } from '~/apiService/movie';
 import { getAll } from '~/apiService/genres';
@@ -20,21 +19,17 @@ import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 const cs = classNames.bind(styles);
 
 const CreateMovie = () => {
-    const [isTvShow, setIsTvShow] = useState(false);
     const [genres, setGenres] = useState([]);
     const [posTer, setPosTer] = useState(
         'https://firebasestorage.googleapis.com/v0/b/twtcinema.appspot.com/o/images%2FPicture2.png?alt=media&token=acb50eb3-ec9c-40b2-b191-6e250e97b9b2',
     );
-    const [movieURL, setMovieURL] = useState(
-        'https://res.cloudinary.com/doe8ogwij/video/upload/v1732879138/web-xem-phim/videos/akyz0w1cjjxjx6njp2rl.mp4',
-    );
     const [editInfoStatus, setEditInfoStatus] = useState();
+    const [movieInfo, setMovieInfo] = useState({ type: 'MOVIE', id: null });
 
     const { showToastMessage } = useContext(AuthContext);
-    const naviagte = useNavigate();
     const storage = getStorage();
 
-    const { register, handleSubmit, reset, setValue } = useForm();
+    const { register, handleSubmit } = useForm();
 
     const Onsubmit = async (data) => {
         setEditInfoStatus('loading');
@@ -43,31 +38,24 @@ const CreateMovie = () => {
             movie_info.PosterPath = posTer;
         }
         console.log('>>> posTer:', posTer);
+        console.log('>>> Genres:', Genres);
         console.log('>>> data:', data);
         console.log('>>> movie_info:', movie_info);
 
         try {
-            const res = await createMovie({ movie_info, genres: Genres });
-            naviagte('/admin/dashboard/movies');
+            const res = await createMovie({ movie_info, genre_ids: [Genres] });
+            setMovieInfo((pre) => ({ ...pre, id: res.movie.Id }));
             showToastMessage('success', res.message);
-            reset();
         } catch (error) {
             showToastMessage('error', error);
         }
         setEditInfoStatus('done');
     };
 
-    const handleChangeCate = (e) => {
-        if (e.target.value == 'tv') {
-            setIsTvShow(true);
-        } else {
-            setIsTvShow(false);
-        }
+    const changeType = (e) => {
+        const type = e.target.value;
+        setMovieInfo((pre) => ({ ...pre, type }));
     };
-
-    useEffect(() => {
-        setValue('Slug', movieURL);
-    }, [movieURL]);
 
     useEffect(() => {
         const getGenres = async () => {
@@ -97,8 +85,7 @@ const CreateMovie = () => {
                         try {
                             setPosTer(downloadURL);
                         } catch (error) {
-                            console.log(error);
-                            // setLoading(false);
+                            console.log('>>> error:', error);
                         }
                     });
                 },
@@ -108,9 +95,7 @@ const CreateMovie = () => {
 
     return (
         <div className={cs('movie')}>
-            <UploadVideo setMovieURL={setMovieURL} movieURL={movieURL} />
-
-            <h3 className="text-center mb-3 fs-1 mt-5 fw-bold">Sửa thông tin cho phim mới</h3>
+            <h3 className="text-center mb-3 fs-1 fw-bold">Sửa thông tin cho phim mới</h3>
             <Form className={cs('movie_form')} onSubmit={handleSubmit(Onsubmit)}>
                 <Row>
                     <Col>
@@ -124,29 +109,12 @@ const CreateMovie = () => {
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Danh mục</Form.Label>
-                            <Form.Select
-                                {...register('Type', { value: 'MOVIE' })}
-                                onChange={(e) => handleChangeCate(e)}
-                            >
+                            <Form.Select {...register('Type', { value: movieInfo.type, onChange: changeType })}>
                                 <option value="MOVIE">Phim Lẻ</option>
                                 <option value="SERIES">Phim Dài Tập</option>
                             </Form.Select>
                         </Form.Group>
                     </Col>
-                    {isTvShow && (
-                        <>
-                            <Col>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Số tập phim</Form.Label>
-                                    <Form.Control
-                                        required
-                                        type="number"
-                                        {...register('TotalEpisodes', { value: '1' })}
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </>
-                    )}
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Thể loại</Form.Label>
@@ -178,12 +146,6 @@ const CreateMovie = () => {
                             <Form.Control required type="text" {...register('CountryId', { value: '1' })} />
                         </Form.Group>
                     </Col>
-                    <Col>
-                        <Form.Group className="mb-3">
-                            <Form.Label>URL phim</Form.Label>
-                            <Form.Control required type="text" {...register('Slug', { value: movieURL })} />
-                        </Form.Group>
-                    </Col>
                 </Row>
                 <Row>
                     <Col>
@@ -205,12 +167,6 @@ const CreateMovie = () => {
                             <Form.Control required type="date" {...register('ReleaseDate', { value: '2024-11-15' })} />
                         </Form.Group>
                     </Col>
-                    <Col>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Điểm đánh giá</Form.Label>
-                            <Form.Control required type="text" {...register('IbmPoints', { value: '9.12' })} />
-                        </Form.Group>
-                    </Col>
                 </Row>
                 <Row>
                     <Col>
@@ -221,6 +177,7 @@ const CreateMovie = () => {
                                 // required
                                 className="mt-4"
                                 type="file"
+                                accept="image/*"
                                 style={{ border: 'none' }}
                                 onChange={handleUploadImg}
                             />
@@ -233,11 +190,13 @@ const CreateMovie = () => {
                     ) : (
                         <>
                             <FontAwesomeIcon icon={faCircleCheck} />
-                            <span>Lưu thông tin phim</span>
+                            <span>Thêm phim</span>
                         </>
                     )}
                 </button>
             </Form>
+
+            <UploadVideo movieType={movieInfo.type} movieId={movieInfo.id} />
         </div>
     );
 };

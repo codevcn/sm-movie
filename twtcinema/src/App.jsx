@@ -47,7 +47,7 @@ function App() {
                         <Route path="month/:month" element={<MoviesPage />} />
                         <Route path="search/:searchValue" element={<MoviesPage />} />
                         <Route path="create" element={<CreateMovie />} />
-                        <Route path="edit/:slug" element={<EditMovie />} />
+                        <Route path="edit/:id" element={<EditMovie />} />
                         <Route path="comment/:id" element={<CommentMovie />} />
                     </Route>
 

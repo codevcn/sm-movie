@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/iframe-has-title */
 import styles from './WatchMovie.module.scss';
 import classNames from 'classnames/bind';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -18,28 +18,23 @@ import Comment from '~/layout/component/Comments';
 import { updateView } from '~/apiService/movie';
 import Skeleton from 'react-loading-skeleton';
 import { RatingSection } from '~/layout/component/Comments/rating';
+import Plyr from 'plyr-react';
+import 'plyr-react/plyr.css';
 
 const cs = classNames.bind(styles);
 
 function WatchMovie() {
     const user = JSON.parse(localStorage.getItem('user'));
-    const { category, id, slug } = useParams();
-    const [searchParams] = useSearchParams();
+    const { category, id } = useParams();
     const [genres, setGenres] = useState([]);
     const [movieDetail, setMovieDetail] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // >>>fix this: change url
-    console.log('>>> category:', category);
-    let src = `https://2embed.org/embed/${category}?id=${id}`;
-    if (category === 'tv') {
-        src += `&s=${movieDetail?.seasons ?? 1}&e=${searchParams.get('episode') ?? 1}`;
-    }
-
+    console.log('>>> movie detail:', movieDetail);
     useEffect(() => {
         async function getDeTailMovie() {
             try {
-                const result = await requestApi.getDetails(slug);
+                const result = await requestApi.getDetails(id);
+                console.log('>>> result:', result)
                 const dataGenres = await getMulti(result.data.slug);
                 setGenres(dataGenres.data);
                 setMovieDetail(result.data);
@@ -54,7 +49,7 @@ function WatchMovie() {
     useEffect(() => {
         const handleAddView = async () => {
             try {
-                await updateView(slug);
+                await updateView(id);
             } catch (error) {
                 console.log(error);
             }
@@ -83,18 +78,12 @@ function WatchMovie() {
 
             return () => clearTimeout(index);
         }
-    }, [movieDetail, slug]);
+    }, [movieDetail, id]);
 
     return (
         <div className={cs('wrapper')}>
-            <iframe
-                className={cs('videofilm')}
-                src={src}
-                width="100%"
-                height="550px"
-                allowFullScreen
-                // frameBorder="0"
-            ></iframe>
+            <div className="video-player">{/* <Plyr source={videoSrc} options={plyrOptions} /> */}</div>
+
             {movieDetail && (
                 <>
                     <div className={cs('InforDetail')}>

@@ -2,6 +2,7 @@ from flask import request, jsonify
 from configs.db_connect import db
 from models.genres import Genres
 from models.movies import Movies
+from models.movie_genres import MovieGenres
 
 
 # Lấy tất cả thể loại (hỗ trợ phân trang)
@@ -47,9 +48,9 @@ def get_all_genres():
 
 
 # Lấy danh sách thể loại liên quan đến một phim
-def get_multi_genres(slug):
+def get_multi_genres(id):
     try:
-        movie = Movies.query.filter_by(Slug=slug).first()
+        movie = Movies.query.filter_by(Id=id).first()
         if not movie:
             return (
                 jsonify(
@@ -61,7 +62,7 @@ def get_multi_genres(slug):
                 404,
             )
 
-        genres = Genres.query.filter(Genres.Id.in_(movie.Genres)).all()
+        genres = Genres.query.filter(MovieGenres.Id.in_(movie.Genres)).all()
         return (
             jsonify(
                 {
