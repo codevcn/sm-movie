@@ -26,6 +26,7 @@ from routes.auth import register_auth_routes
 from routes.comment import register_comment_routes
 from routes.genres import register_genre_routes
 from routes.movie import register_movie_routes
+from routes.country import register_country_routes
 
 
 def create_app():
@@ -50,6 +51,7 @@ def create_app():
     register_comment_routes(app)
     register_genre_routes(app)
     register_movie_routes(app)
+    register_country_routes(app)
 
     return app
 

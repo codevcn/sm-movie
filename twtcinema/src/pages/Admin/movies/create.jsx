@@ -15,6 +15,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { getAllCountries } from '../../../apiService/country';
 
 const cs = classNames.bind(styles);
 
@@ -65,9 +66,8 @@ const PickGenresModal = ({ setTypedData, setShowModal, showModal, genres, typedD
 
 const CreateMovie = () => {
     const [genres, setGenres] = useState([]);
-    const [posTer, setPosTer] = useState(
-        'https://firebasestorage.googleapis.com/v0/b/twtcinema.appspot.com/o/images%2FPicture2.png?alt=media&token=acb50eb3-ec9c-40b2-b191-6e250e97b9b2',
-    );
+    const [countries, setCountries] = useState([]);
+    const [posTer, setPosTer] = useState();
     const [editInfoStatus, setEditInfoStatus] = useState();
     const [movieInfo, setMovieInfo] = useState({ type: 'MOVIE', id: null });
     const [typedData, setTypedData] = useState({ genreIds: [] });
@@ -134,7 +134,16 @@ const CreateMovie = () => {
                 console.log('>>> error:', error);
             }
         };
+        const getCountries = async () => {
+            try {
+                const { data } = await getAllCountries();
+                setCountries(data);
+            } catch (error) {
+                console.log('>>> error:', error);
+            }
+        };
         getGenres();
+        getCountries();
     }, []);
 
     const handleUploadImg = (e) => {
@@ -228,12 +237,16 @@ const CreateMovie = () => {
                             </Form.Select>
                         </Form.Group>
                     </Col>
-                </Row>
-                <Row>
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Quốc gia</Form.Label>
-                            <Form.Control required type="text" {...register('CountryId', { value: '1' })} />
+                            <Form.Select {...register('CountryId')}>
+                                {countries.map(({ Id, Name }) => (
+                                    <option key={Id} value={Id}>
+                                        {Name}
+                                    </option>
+                                ))}
+                            </Form.Select>
                         </Form.Group>
                     </Col>
                 </Row>

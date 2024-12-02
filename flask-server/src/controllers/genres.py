@@ -8,9 +8,10 @@ from models.movie_genres import MovieGenres
 # Lấy tất cả thể loại (hỗ trợ phân trang)
 def get_all_genres():
     try:
-        if "limit" in request.args:
-            limit = int(request.args.get("limit"))
-            curr_page = int(request.args.get("page", 1))
+        params = request.args
+        if "limit" in params:
+            limit = int(params.get("limit"))
+            curr_page = int(params.get("page", 1))
             genres = Genres.query.offset(limit * (curr_page - 1)).limit(limit).all()
             count_documents = Genres.query.count()
 
