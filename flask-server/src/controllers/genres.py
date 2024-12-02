@@ -49,9 +49,9 @@ def get_all_genres():
 
 
 # Lấy danh sách thể loại liên quan đến một phim
-def get_multi_genres(id):
+def get_multi_genres(movie_id):
     try:
-        movie = Movies.query.filter_by(Id=id).first()
+        movie = Movies.query.filter_by(Id=movie_id).first()
         if not movie:
             return (
                 jsonify(
@@ -62,8 +62,10 @@ def get_multi_genres(id):
                 ),
                 404,
             )
-
-        genres = Genres.query.filter(MovieGenres.Id.in_(movie.Genres)).all()
+        movie_genres = movie.Genres
+        genres = Genres.query.filter(
+            Genres.Id.in_([movie_genre.GenreId for movie_genre in movie_genres])
+        ).all()
         return (
             jsonify(
                 {

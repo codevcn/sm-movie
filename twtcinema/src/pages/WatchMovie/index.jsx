@@ -1,15 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/iframe-has-title */
-import styles from './WatchMovie.module.scss';
-import classNames from 'classnames/bind';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useLocation } from 'react-router-dom';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 import requestApi from '~/apiService';
 // import Season from './Season';
-import Episode from './Episode';
 import { Img } from '~/apiService/instance';
 import SimilarMovie from '~/layout/component/SimilarMovie';
 import { addHistoryMovie } from '~/apiService/user';
@@ -17,56 +15,100 @@ import { getMulti } from '~/apiService/genres';
 import Comment from '~/layout/component/Comments';
 import { updateView } from '~/apiService/movie';
 import Skeleton from 'react-loading-skeleton';
-import { RatingSection } from '~/layout/component/Comments/rating';
 import Plyr from 'plyr-react';
 import 'plyr-react/plyr.css';
-
-const cs = classNames.bind(styles);
+import './WatchMovie.scss';
+import { getEpisodeData, getEpisodes } from '../../apiService/episode';
+import { EpisodeList, MovieCard, Overview } from '../Detail';
 
 function WatchMovie() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const { category, id } = useParams();
-    const [genres, setGenres] = useState([]);
-    const [movieDetail, setMovieDetail] = useState([]);
+    const { type, movieId } = useParams();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const episodeNumber = queryParams.get('ep');
+    const [playingEp, setPlayingEp] = useState();
+    const [genres, setGenres] = useState();
+    const [movieDetail, setMovieDetail] = useState();
     const [loading, setLoading] = useState(true);
-    console.log('>>> movie detail:', movieDetail);
-    useEffect(() => {
-        async function getDeTailMovie() {
+    const [episodes, setEpisodes] = useState();
+    console.log('>>> movie detail:', { movieDetail, movieId, type, playingEp });
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const plyrOptions = {
+        controls: [
+            'play-large', // Nút phát ở giữa
+            'rewind', // Nút tua lùi
+            'play', // Nút phát/tạm dừng
+            'fast-forward', // Nút tua tới
+            'progress', // Thanh tiến trình
+            'current-time', // Thời gian hiện tại
+            'duration', // Tổng thời gian
+            'mute', // Nút tắt tiếng
+            'volume', // Điều chỉnh âm lượng
+            'settings', // Menu cài đặt
+            'pip', // Picture-in-Picture
+            'airplay', // Airplay
+            'fullscreen', // Toàn màn hình
+        ],
+        settings: ['captions', 'quality', 'speed'],
+        autoplay: false,
+        muted: false,
+        hideControls: true,
+        tooltips: { controls: true, seek: true },
+        seekTime: 10,
+    };
+
+    async function getMovieDetail() {
+        setLoading(true);
+        try {
+            const movieDetailData = await requestApi.getDetails(movieId);
+            const genresData = await getMulti(movieId);
+            setGenres(genresData.data);
+            setMovieDetail((pre) => ({ ...pre, ...movieDetailData.data }));
+            setLoading(false);
+        } catch (error) {
+            console.log('>>> error:', error);
+        }
+    }
+
+    const getEpisodesHandler = async () => {
+        if (movieId) {
             try {
-                const result = await requestApi.getDetails(id);
-                console.log('>>> result:', result)
-                const dataGenres = await getMulti(result.data.slug);
-                setGenres(dataGenres.data);
-                setMovieDetail(result.data);
-                setLoading(false);
+                const { data } = await getEpisodes(movieId);
+                for (const ep of data) {
+                    if (ep.EpisodeNumber === parseInt(episodeNumber)) {
+                        setPlayingEp(ep);
+                    }
+                }
+                setEpisodes(data);
             } catch (error) {
-                console.log(error);
+                console.log('>>> error:', error);
             }
         }
-        getDeTailMovie();
-    }, []);
+    };
+
+    const handleAddView = async () => {
+        try {
+            await updateView(movieId);
+        } catch (error) {
+            console.log('>>> error:', error);
+        }
+    };
 
     useEffect(() => {
-        const handleAddView = async () => {
-            try {
-                await updateView(id);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
         const index = setTimeout(() => {
             handleAddView();
         }, 10000);
-
+        getMovieDetail();
+        getEpisodesHandler();
         return () => clearTimeout(index);
     }, []);
 
     useEffect(() => {
-        if (user && movieDetail) {
+        if (user && movieId) {
             const handleAddHistory = async () => {
                 try {
-                    await addHistoryMovie(movieDetail._id, user.id);
+                    await addHistoryMovie(movieId, user.Id);
                 } catch (error) {
                     console.log(error);
                 }
@@ -78,87 +120,33 @@ function WatchMovie() {
 
             return () => clearTimeout(index);
         }
-    }, [movieDetail, id]);
+    }, [movieId]);
 
     return (
-        <div className={cs('wrapper')}>
-            <div className="video-player">{/* <Plyr source={videoSrc} options={plyrOptions} /> */}</div>
-
-            {movieDetail && (
-                <>
-                    <div className={cs('InforDetail')}>
-                        {loading ? (
-                            <Skeleton className={cs('poster')} style={{ width: '200px' }} />
-                        ) : (
-                            <img
-                                src={Img.posterImg(movieDetail.poster_path || movieDetail.backdrop_path)}
-                                className={cs('poster')}
-                                alt=""
-                            ></img>
-                        )}
-                        {loading ? (
-                            <div className={cs('content')}>
-                                <Skeleton className={cs('title')} />
-                                <div className={cs('genres')}>
-                                    <Skeleton className={cs('genres-item')} style={{ width: '100px' }} />
-                                </div>
-                                <div className={cs('rate')}>
-                                    <FontAwesomeIcon className={cs('icon')} icon={faStar} />
-                                    {movieDetail.ibmPoints}
-                                </div>
-                                <div className={cs('summary')}>
-                                    <h4>Tóm tắt</h4>
-                                    <Skeleton className={cs('overview')} style={{ width: '900px', height: '70px' }} />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className={cs('content')}>
-                                <h2 className={cs('title')}>{movieDetail.name} </h2>
-                                <div className={cs('genres')}>
-                                    {genres.map((genre, index) => {
-                                        return (
-                                            <span className={cs('genres-item')} key={index}>
-                                                {genre.name}
-                                            </span>
-                                        );
-                                    })}
-                                </div>
-                                <div className={cs('rate')}>
-                                    <FontAwesomeIcon className={cs('icon')} icon={faStar} />
-                                    {movieDetail.ibmPoints}
-                                </div>
-                                <div className={cs('summary')}>
-                                    <h4>Tóm tắt</h4>
-                                    <p className={cs('overview')}>{movieDetail.overview}</p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    {category === 'tv' && (
-                        <>
-                            {/* <h4 className={cs('titleTv')}>Season</h4>
-                            <div className={cs('allSeaon')}>
-                                {movieDetail.seasons
-                                    .filter((season) => season.season_number !== 0 && season.episode_count > 0)
-                                    .map((season, index) => (
-                                        <Season key={index} season={season} />
-                                    ))}
-                            </div> */}
-                            <h4 className={cs('titleTv')}>Tập</h4>
-                            <Episode movieDetail={movieDetail} />
-                        </>
-                    )}
-
-                    <div className={cs('Similar')}>
-                        <h4 className={cs('titleOverview')}>Đề xuất</h4>
-                        <SimilarMovie category={movieDetail.category} slug={movieDetail.slug} />
-                    </div>
-
-                    <div>
-                        <RatingSection value={3.5} />
-                        <Comment MovieId={movieDetail._id} />
-                    </div>
-                </>
+        <div className="watch-movie-section">
+            {playingEp && (
+                <div className="video-player">
+                    <Plyr
+                        source={{
+                            type: 'video',
+                            sources: [
+                                {
+                                    src: playingEp.Source,
+                                    type: 'video/mp4',
+                                },
+                            ],
+                        }}
+                        options={plyrOptions}
+                    />
+                </div>
+            )}
+            {movieDetail && episodes && <EpisodeList episodes={episodes} type={movieDetail.Type} />}
+            {movieDetail && genres && genres.length > 0 && (
+                <div className="movie-details">
+                    <h2 className="movie-details-title">THÔNG TIN PHIM</h2>
+                    <MovieCard movieDetail={movieDetail} genres={genres} rating={3.5} />
+                    <Overview overview={movieDetail.Overview} />
+                </div>
             )}
         </div>
     );

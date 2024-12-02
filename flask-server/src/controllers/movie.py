@@ -14,7 +14,6 @@ from models.movie_genres import MovieGenres
 def create():
     try:
         data = request.get_json()
-
         movie_info = data.get("movie_info", None)
         genre_ids = data.get("genre_ids", None)
         if not movie_info or not genre_ids:

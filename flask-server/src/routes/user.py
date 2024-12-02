@@ -16,6 +16,7 @@ from controllers.watch_history import (
     get_user_movie_histories,
     add_histories_movie,
 )
+from controllers.rating import user_rate_movie, get_rating
 from flask import Blueprint, Flask
 
 
@@ -49,12 +50,14 @@ def register_user_routes(app: Flask):
 
     # Định nghĩa các tuyến API cho favorite
     api_blueprint.add_url_rule(
-        "/get-favorites-movie/<int:id>",
+        "/get-favorites-movie/<int:user_id>",
         view_func=get_list_favorites_movie,
         methods=["GET"],
     )
     api_blueprint.add_url_rule(
-        "/user-favorites/<int:id>", view_func=get_user_movie_favorites, methods=["GET"]
+        "/user-favorites/<int:user_id>",
+        view_func=get_user_movie_favorites,
+        methods=["GET"],
     )
     api_blueprint.add_url_rule(
         "/add-favourite", view_func=add_favorites_movie, methods=["POST"]
@@ -67,6 +70,12 @@ def register_user_routes(app: Flask):
     api_blueprint.add_url_rule(
         "/add-history", view_func=add_histories_movie, methods=["POST"]
     )
+
+    # Định nghĩa các tuyến API cho rating
+    api_blueprint.add_url_rule(
+        "/rate-a-movie", view_func=user_rate_movie, methods=["POST"]
+    )
+    api_blueprint.add_url_rule("/get-rating", view_func=get_rating, methods=["POST"])
 
     # Đăng ký Blueprint
     app.register_blueprint(api_blueprint)

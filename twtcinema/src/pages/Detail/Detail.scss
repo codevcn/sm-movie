@@ -1,0 +1,155 @@
+.movie-details {
+    padding: 0 20px;
+
+    .movie-card {
+        display: flex;
+        column-gap: 20px;
+        background-color: #ffffff; /* Nền trắng */
+        color: #000000; /* Chữ màu đen */
+        border-radius: 10px;
+
+        .movie-poster {
+            display: flex;
+            align-items: center;
+            width: 300px;
+
+            img {
+                width: 100%;
+                border-radius: 5px;
+            }
+        }
+
+        .movie-info {
+            margin-top: 10px;
+
+            h3 {
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: #333333; /* Tiêu đề đậm hơn */
+            }
+
+            p {
+                font-size: 1.5rem;
+                color: #666666; /* Màu chữ nhẹ hơn */
+                margin: 10px 0;
+            }
+        }
+
+        .rating {
+            .stars {
+                margin-right: 5px;
+                color: #ffc107; /* Màu sao vàng */
+                margin-top: 10px;
+            }
+
+            .rating-text {
+                font-size: 1.5rem;
+                margin-top: 5px;
+            }
+        }
+
+        .actions {
+            display: flex;
+            column-gap: 10px;
+            align-items: center;
+
+            .watch-now-btn {
+                display: flex;
+                align-items: center;
+                column-gap: 10px;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: bold;
+                color: white;
+                font-size: 1.5rem;
+                margin-top: 20px;
+                background-color: var(--primary);
+            }
+
+            .add-to-favorite {
+                display: flex;
+                align-items: center;
+                column-gap: 10px;
+                padding: 7px 20px;
+                border-radius: 8px;
+                font-weight: bold;
+                color: white;
+                font-size: 1.5rem;
+                margin-top: 20px;
+                background-color: white;
+                color: var(--primary);
+                border: 3px var(--primary) solid;
+
+                .favorite-icon {
+                    fill: var(--primary);
+                    height: 1.8rem;
+                    width: 1.8rem;
+                }
+            }
+        }
+    }
+
+    .overview {
+        background-color: #ffffff; /* Nền trắng */
+        color: #000000; /* Màu chữ đen */
+        border-radius: 10px;
+        max-width: 800px;
+        margin-top: 10px;
+        margin-top: 50px;
+
+        h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #000000; /* Tiêu đề màu đen */
+        }
+
+        .overview-text {
+            background-color: #e0e0e0; /* Nền xám nhạt */
+            color: #000000; /* Màu chữ đen */
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1.4rem;
+        }
+    }
+
+    .episode-list {
+        background-color: #ffffff; /* Nền trắng */
+        color: #000000; /* Màu chữ đen */
+        border-radius: 10px;
+        max-width: 800px;
+        margin-top: 50px;
+
+        .episode-list-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #000000; /* Tiêu đề màu đen */
+        }
+
+        .episode-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+
+            .episode-button {
+                background-color: #e0e0e0; /* Nền xám nhạt */
+                color: #000000; /* Màu chữ đen */
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 1.3rem;
+                font-weight: 500;
+
+                &:hover {
+                    background-color: var(--primary); /* Nền xanh khi hover */
+                    color: #ffffff; /* Chữ trắng khi hover */
+                }
+            }
+        }
+    }
+}

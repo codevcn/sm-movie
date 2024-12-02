@@ -1,0 +1,58 @@
+.watch-movie-section {
+    padding: 0 20px;
+
+    .video-player {
+        height: 450px;
+
+        .plyr {
+            height: 100%;
+        }
+    }
+
+    .episode-list {
+        background-color: #ffffff; /* Nền trắng */
+        color: #000000; /* Màu chữ đen */
+        border-radius: 10px;
+        max-width: 800px;
+        margin-top: 40px;
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #000000; /* Tiêu đề màu đen */
+        }
+
+        .episode-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            .episode-button {
+                background-color: #e0e0e0; /* Nền xám nhạt */
+                color: #000000; /* Màu chữ đen */
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 1.3rem;
+                font-weight: 500;
+
+                &:hover {
+                    background-color: var(--primary); /* Nền xanh khi hover */
+                    color: #ffffff; /* Chữ trắng khi hover */
+                }
+            }
+        }
+    }
+
+    .movie-details {
+        margin-top: 40px;
+        padding: 0;
+
+        .movie-details-title {
+            margin-top: 30px;
+        }
+    }
+}

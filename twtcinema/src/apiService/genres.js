@@ -10,8 +10,8 @@ export const getAll = (currPage, limit = null) => {
     return instance.get(url);
 };
 
-export const getMulti = (slug) => {
-    const url = '/genres/get-multi/' + slug;
+export const getMulti = (movieId) => {
+    const url = '/genres/get-multi/' + movieId;
     return instance.get(url);
 };
 

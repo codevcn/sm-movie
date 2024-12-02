@@ -31,7 +31,3 @@ export const deleteMovie = (id) => {
     const url = '/delete/' + id;
     return instance.delete(url);
 };
-
-export const uploadMovie = (videoFile) => {
-    return instance.post('/upload-video');
-};

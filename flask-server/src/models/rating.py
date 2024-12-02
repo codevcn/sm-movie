@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, func, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, func, ForeignKey, Float
 from configs.db_connect import db
 from sqlalchemy.orm import relationship
 
@@ -12,7 +12,7 @@ class Rating(db.Model):
     MovieId = Column(
         Integer, ForeignKey("Movies.Id"), nullable=False, primary_key=True
     )  # Trường `MovieId`, không được để trống
-    Rating = Column(Integer, nullable=False)  # Trường `MovieId`, không được để trống
+    Rating = Column(Float, nullable=False)  # Trường `MovieId`, không được để trống
     CreatedAt = Column(
         DateTime, nullable=False, server_default=func.now()
     )  # Trường `CreatedAt`, mặc định là thời gian hiện tại

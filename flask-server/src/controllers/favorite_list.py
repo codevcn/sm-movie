@@ -17,8 +17,9 @@ def get_list_favorites_movie(user_id):
 # Thêm hoặc xóa phim yêu thích
 def add_favorites_movie():
     try:
-        user_id = request.json.get("user_id")
-        movie_id = request.json.get("movie_id")
+        data = request.get_json()
+        user_id = data.get("user_id")
+        movie_id = data.get("movie_id")
 
         if not user_id or not movie_id:
             return (

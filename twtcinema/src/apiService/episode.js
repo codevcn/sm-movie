@@ -7,3 +7,11 @@ export const uploadEpisode = async (formData) => {
         },
     });
 };
+
+export const getEpisodes = async (movieId) => {
+    return instance.get('/episode/get-all/' + movieId);
+};
+
+export const getEpisodeData = async (movieId, epNum) => {
+    return instance.get(`/episode/get-ep-data/${movieId}/${epNum}`);
+};

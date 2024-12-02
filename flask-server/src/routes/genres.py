@@ -18,7 +18,7 @@ def register_genre_routes(app: Flask):
         "/get-all-genres", view_func=get_all_genres, methods=["GET"]
     )
     api_blueprint.add_url_rule(
-        "/get-multi/<string:id>", view_func=get_multi_genres, methods=["GET"]
+        "/get-multi/<string:movie_id>", view_func=get_multi_genres, methods=["GET"]
     )
     api_blueprint.add_url_rule(
         "/get-detail/<int:id>", view_func=get_genre_detail, methods=["GET"]

@@ -38,7 +38,6 @@ class Movies(db.Model):
         )
 
     def to_dict(self):
-        print(">>> genres:", self.Genres)
         return {
             "Id": self.Id,
             "Name": self.Name,

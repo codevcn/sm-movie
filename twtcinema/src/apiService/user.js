@@ -45,12 +45,20 @@ export const editUser = (data, userEmail) => {
     return instance.put(url, data);
 };
 
-export const addFavouriteMovie = (movieId, userId) => {
+export const addFavouriteMovie = (movie_id, user_id) => {
     const url = `/user/add-favourite`;
-    return instance.post(url, { movieId, userId });
+    return instance.post(url, { movie_id, user_id });
 };
 
 export const addHistoryMovie = (movieId, userId) => {
     const url = `/user/add-history`;
     return instance.post(url, { movieId, userId });
+};
+
+export const rateAMovie = (movie_id, user_id, rating) => {
+    return instance.post('/user/rate-a-movie', { movie_id, user_id, rating });
+};
+
+export const getRating = (movie_id, user_id) => {
+    return instance.post('/user/get-rating', { movie_id, user_id });
 };

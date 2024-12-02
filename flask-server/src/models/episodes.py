@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from configs.db_connect import db
 from sqlalchemy.orm import relationship
 
@@ -16,7 +16,7 @@ class Episodes(db.Model):
         Integer, nullable=False
     )  # Trường `Name`, không được để trống
     Source = Column(String(255), nullable=False)  # Trường `Name`, không được để trống
-    Duration = Column(DateTime, nullable=True)  # Không bắt buộc
+    Duration = Column(Float, nullable=True)  # Không bắt buộc
 
     Movie = relationship("Movies", back_populates="Episodes", lazy="select")
     WatchHistories = relationship(
@@ -32,7 +32,5 @@ class Episodes(db.Model):
             "MovieId": self.MovieId,
             "EpisodeNumber": self.EpisodeNumber,
             "Source": self.Source,
-            "Duration": (
-                self.Duration.isoformat() if self.Duration else None
-            ),  # Chuyển đổi datetime thành chuỗi ISO 8601
+            "Duration": self.Duration,
         }

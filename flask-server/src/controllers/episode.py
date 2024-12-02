@@ -38,12 +38,11 @@ def upload_episode():
 
     upload_folder = "web-xem-phim/videos"
     payload = request.form
-    print(">>> payload:",payload)
+
     try:
         result = upload_large(
             file_stream, resource_type="video", chunk_size=6000000, folder=upload_folder
         )
-        print(">>> video res:", result)
         ep_url = result["secure_url"]
         episode = Episodes(
             MovieId=payload["movie_id"], Source=ep_url, EpisodeNumber=payload["ep_num"]
@@ -52,6 +51,59 @@ def upload_episode():
         db.session.commit()
         return jsonify({"url": ep_url}), 200
     except Exception as e:
-        print(">>> err:",e)
         db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+def get_all_episodes(movie_id):
+    try:
+        episodes = Episodes.query.filter_by(MovieId=movie_id).all()
+        if not episodes:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Tập phim không tồn tại",
+                    }
+                ),
+                404,
+            )
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "data": [ep.to_dict() for ep in episodes],
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def get_ep_data(movie_id, ep_num):
+    try:
+        episode = Episodes.query.filter_by(
+            MovieId=movie_id, EpisodeNumber=ep_num
+        ).first()
+        if not episode:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Tập phim không tồn tại",
+                    }
+                ),
+                404,
+            )
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "episode": episode.to_dict(),
+                }
+            ),
+            200,
+        )
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
