@@ -17,10 +17,11 @@ def is_valid_video(file):
 
 
 def upload_episode():
-    if "file" not in request.files:
+    files = request.files
+    if "file" not in files:
         return jsonify({"error": "No file part"}), 400
 
-    file = request.files["file"]
+    file = files["file"]
 
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
@@ -34,13 +35,15 @@ def upload_episode():
 
     # Chuyển FileStorage thành BytesIO
     file_stream = BytesIO(file.read())
+
     upload_folder = "web-xem-phim/videos"
     payload = request.form
-
+    print(">>> payload:",payload)
     try:
         result = upload_large(
             file_stream, resource_type="video", chunk_size=6000000, folder=upload_folder
         )
+        print(">>> video res:", result)
         ep_url = result["secure_url"]
         episode = Episodes(
             MovieId=payload["movie_id"], Source=ep_url, EpisodeNumber=payload["ep_num"]
@@ -49,5 +52,6 @@ def upload_episode():
         db.session.commit()
         return jsonify({"url": ep_url}), 200
     except Exception as e:
+        print(">>> err:",e)
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

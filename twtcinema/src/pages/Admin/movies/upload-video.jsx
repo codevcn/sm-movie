@@ -47,6 +47,7 @@ export const UploadVideo = ({ movieType, movieId }) => {
         if (url) {
             toast.success('Upload successful!');
             setMovieURL(url);
+            // naviagte('/admin/dashboard/movies');
         }
         setUploadStatus('done');
     };
@@ -88,7 +89,7 @@ export const UploadVideo = ({ movieType, movieId }) => {
 
         return (
             <div className="upload-video-section">
-                <h2 className="upload-title">Phim đã tải lên</h2>
+                <h2 className="upload-title">Tập phim đã tải lên</h2>
                 <div id="video-player-wrapper">
                     <Plyr source={videoSrc} options={plyrOptions} />
                 </div>

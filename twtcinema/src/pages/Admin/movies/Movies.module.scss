@@ -1,8 +1,58 @@
 $myvar-regular-bgcl: var(--primary);
 
+.pick-genres-modal {
+    .genres-list {
+        display: flex;
+        column-gap: 25px;
+        row-gap: 5px;
+        flex-wrap: wrap;
+
+        .form-group-checkbox {
+            $regular-size: 1.5rem;
+
+            display: flex;
+            align-items: center;
+
+            input[type='checkbox'] {
+                height: $regular-size;
+                width: $regular-size;
+
+                &:checked {
+                    background-color: $myvar-regular-bgcl;
+                    border-color: $myvar-regular-bgcl;
+                }
+            }
+
+            label {
+                font-size: $regular-size;
+                margin-left: 5px;
+            }
+        }
+    }
+
+    .bottom-btn {
+        font-size: 1.3em;
+    }
+}
+
 .movie {
     font-size: 16px;
     padding: 20px;
+
+    .pick-genres-input-container {
+        display: flex;
+        align-items: stretch;
+        column-gap: 10px;
+
+        button {
+            border-radius: 5px;
+            min-width: max-content;
+            color: white;
+            font-weight: bold;
+            background-color: $myvar-regular-bgcl;
+            padding: 5px 15px;
+        }
+    }
 
     &_utils {
         display: flex;
@@ -27,6 +77,19 @@ $myvar-regular-bgcl: var(--primary);
             &:hover {
                 background-color: rgba(22, 24, 35, 0.03);
             }
+        }
+    }
+
+    .edit-movie-btn-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .edit-movie-btn {
+            background-color: black;
+            border-radius: 5px;
+            color: white;
+            padding: 0 10px;
         }
     }
 

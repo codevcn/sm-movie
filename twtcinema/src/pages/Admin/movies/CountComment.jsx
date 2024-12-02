@@ -16,7 +16,7 @@ function CountCmt({ movieId }) {
         comment();
     }, [movieId]);
     return (
-        <td className="text-center">
+        <td className="text-center align-middle">
             <Link
                 to={'/admin/dashboard/movies/comment/' + movieId}
                 style={{ textDecoration: 'underline', color: '#fe2c55' }}

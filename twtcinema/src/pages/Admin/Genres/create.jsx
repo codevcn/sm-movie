@@ -32,10 +32,6 @@ const CreateGenres = () => {
             <h3 className="text-center mt-4 mb-3 fs-1 fw-bold">Thêm thể loại mới</h3>
             <Form className={cs('genres_form')} onSubmit={handleSubmit(Onsubmit)}>
                 <Form.Group className="mb-3">
-                    <Form.Label>Id</Form.Label>
-                    <Form.Control required type="text" {...register('Id')} />
-                </Form.Group>
-                <Form.Group className="mb-3">
                     <Form.Label>Tên thể loại</Form.Label>
                     <Form.Control required type="text" {...register('Name')} />
                 </Form.Group>

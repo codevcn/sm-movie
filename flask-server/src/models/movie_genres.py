@@ -26,10 +26,4 @@ class MovieGenres(db.Model):
         return {
             "GenreId": self.GenreId,
             "MovieId": self.MovieId,
-            "Movie": (
-                self.Movie.to_dict() if self.Movie else None
-            ),  # Nếu có Movie, gọi phương thức to_dict của nó
-            "Genre": (
-                self.Genre.to_dict() if self.Genre else None
-            ),  # Nếu có Genre, gọi phương thức to_dict của nó
         }

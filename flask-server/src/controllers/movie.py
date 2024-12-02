@@ -15,16 +15,9 @@ def create():
     try:
         data = request.get_json()
 
-        # add movie
-        movie = Movies(**data["movie_info"])
-        db.session.add(movie)
-        db.session.commit()
-
-        # add genres
-        movie_id = movie.Id
-        genreIds = data.get("genre_ids", [])
-
-        if not movie_id or not genreIds:
+        movie_info = data.get("movie_info", None)
+        genre_ids = data.get("genre_ids", None)
+        if not movie_info or not genre_ids:
             return (
                 jsonify(
                     {
@@ -34,12 +27,17 @@ def create():
                 ),
                 400,
             )
-        print(">>> genre ids:", genreIds)
-        # Tạo record trong bảng MovieGenres
+
+        # add movie
+        movie = Movies(**movie_info)
+        db.session.add(movie)
+        db.session.commit()
+
+        # add genres
+        movie_id = movie.Id
         movie_genre_records = [
-            MovieGenres(MovieId=movie_id, GenreId=genreId) for genreId in genreIds
+            MovieGenres(MovieId=movie_id, GenreId=genre_id) for genre_id in genre_ids
         ]
-        print(">>> movie_genre_records:", movie_genre_records)
         db.session.add_all(movie_genre_records)
         db.session.commit()
 

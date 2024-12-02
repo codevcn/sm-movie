@@ -2,21 +2,66 @@
 /* eslint-disable eqeqeq */
 import styles from './Movies.module.scss';
 import classNames from 'classnames/bind';
-import { Col, Form, Row } from 'react-bootstrap';
-import { useContext, useEffect, useState } from 'react';
+import { Col, Form, Row, Button, Modal } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { createMovie } from '~/apiService/movie';
 import { getAll } from '~/apiService/genres';
-import { AuthContext } from '~/context';
 
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { UploadVideo } from './upload-video';
 import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 const cs = classNames.bind(styles);
+
+const PickGenresModal = ({ setTypedData, setShowModal, showModal, genres, typedData }) => {
+    const handleGenreToggle = (genreId) => {
+        setTypedData((pre) => {
+            const isSelected = pre.genreIds.includes(genreId);
+            return {
+                ...pre,
+                genreIds: isSelected
+                    ? pre.genreIds.filter((id) => id !== genreId) // Bỏ chọn thể loại
+                    : [...pre.genreIds, genreId], // Thêm thể loại
+            };
+        });
+    };
+
+    return (
+        <Modal show={showModal} onHide={() => setShowModal(false)} className={cs('pick-genres-modal')}>
+            <Modal.Header closeButton>
+                <Modal.Title>Chọn Thể Loại</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div className={cs('genres-list')}>
+                    {genres.map(({ Id, Name }) => (
+                        <Form.Check key={Id} className={cs('form-group-checkbox')}>
+                            <Form.Check.Input
+                                type="checkbox"
+                                checked={typedData.genreIds.includes(Id)}
+                                onChange={() => handleGenreToggle(Id)}
+                                id={`genre-input-${Id}`}
+                            />
+                            <Form.Check.Label htmlFor={`genre-input-${Id}`}>{Name}</Form.Check.Label>
+                        </Form.Check>
+                    ))}
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button className={cs('bottom-btn')} variant="secondary" onClick={() => setShowModal(false)}>
+                    Đóng
+                </Button>
+                <Button className={cs('bottom-btn')} variant="primary" onClick={() => setShowModal(false)}>
+                    Xác Nhận
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
 
 const CreateMovie = () => {
     const [genres, setGenres] = useState([]);
@@ -25,29 +70,52 @@ const CreateMovie = () => {
     );
     const [editInfoStatus, setEditInfoStatus] = useState();
     const [movieInfo, setMovieInfo] = useState({ type: 'MOVIE', id: null });
+    const [typedData, setTypedData] = useState({ genreIds: [] });
+    const [openPickGenres, setOpenPickGenres] = useState();
 
-    const { showToastMessage } = useContext(AuthContext);
     const storage = getStorage();
 
     const { register, handleSubmit } = useForm();
 
-    const Onsubmit = async (data) => {
-        setEditInfoStatus('loading');
-        const { Genres, ...movie_info } = data;
-        if (posTer) {
-            movie_info.PosterPath = posTer;
+    const validateData = (data) => {
+        const { Name, Type, Genres, Language, CountryId, Overview, ReleaseDate, PosterPath } = data;
+        if (
+            Name &&
+            Type &&
+            Genres &&
+            Genres.length > 0 &&
+            Language &&
+            CountryId &&
+            Overview &&
+            ReleaseDate &&
+            PosterPath
+        ) {
+            return true;
         }
-        console.log('>>> posTer:', posTer);
-        console.log('>>> Genres:', Genres);
-        console.log('>>> data:', data);
-        console.log('>>> movie_info:', movie_info);
+        return false;
+    };
 
+    const Onsubmit = async (data) => {
+        console.log('>>> posTer:', posTer);
+        console.log('>>> data:', data);
+        console.log('>>> typed data:', typedData);
+
+        const { ...movie_info } = data;
+        movie_info.PosterPath = posTer;
+        const pickedGenreIds = typedData.genreIds;
+
+        if (!validateData({ ...movie_info, Genres: pickedGenreIds })) {
+            toast.error('Vui lòng không bỏ trống bất kì trường nào!');
+            return;
+        }
+
+        setEditInfoStatus('loading');
         try {
-            const res = await createMovie({ movie_info, genre_ids: [Genres] });
+            const res = await createMovie({ movie_info, genre_ids: pickedGenreIds });
             setMovieInfo((pre) => ({ ...pre, id: res.movie.Id }));
-            showToastMessage('success', res.message);
+            toast.success(res.message);
         } catch (error) {
-            showToastMessage('error', error);
+            toast.error(error.message);
         }
         setEditInfoStatus('done');
     };
@@ -63,7 +131,7 @@ const CreateMovie = () => {
                 const res = await getAll();
                 setGenres(res.data);
             } catch (error) {
-                console.log(error);
+                console.log('>>> error:', error);
             }
         };
         getGenres();
@@ -93,6 +161,15 @@ const CreateMovie = () => {
         }
     };
 
+    const writeTextForPickedGenres = (genreIds) => {
+        const len = genreIds.length;
+        if (len > 0) {
+            return genreIds.map((genreId, index) => `${genres.find(({ Id }) => Id === genreId).Name}`).join(', ');
+        } else {
+            return 'Bạn chưa chọn thể loại!';
+        }
+    };
+
     return (
         <div className={cs('movie')}>
             <h3 className="text-center mb-3 fs-1 fw-bold">Sửa thông tin cho phim mới</h3>
@@ -117,15 +194,28 @@ const CreateMovie = () => {
                     </Col>
                     <Col>
                         <Form.Group className="mb-3">
-                            <Form.Label>Thể loại</Form.Label>
-                            <Form.Select {...register('Genres', { value: '1' })} className={cs('movie_form_genres')}>
-                                {genres.map((genres, index) => (
-                                    <option value={genres.Id} key={index}>
-                                        {genres.Name}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <Form.Label>Thể Loại</Form.Label>
+                            <div className={cs('pick-genres-input-container')}>
+                                <Form.Control
+                                    required
+                                    type="text"
+                                    value={writeTextForPickedGenres(typedData.genreIds)}
+                                    readOnly
+                                    onClick={() => setOpenPickGenres(true)}
+                                />
+                                <button type="button" onClick={() => setOpenPickGenres(true)}>
+                                    Chọn thể loại
+                                </button>
+                            </div>
                         </Form.Group>
+                        <PickGenresModal
+                            genres={genres}
+                            openPickGenres={openPickGenres}
+                            setShowModal={setOpenPickGenres}
+                            showModal={openPickGenres}
+                            setTypedData={setTypedData}
+                            typedData={typedData}
+                        />
                     </Col>
                 </Row>
                 <Row>
@@ -196,7 +286,7 @@ const CreateMovie = () => {
                 </button>
             </Form>
 
-            <UploadVideo movieType={movieInfo.type} movieId={movieInfo.id} />
+            {movieInfo.id && <UploadVideo movieType={movieInfo.type} movieId={movieInfo.id} />}
         </div>
     );
 };
