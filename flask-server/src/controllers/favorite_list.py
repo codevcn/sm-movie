@@ -1,5 +1,7 @@
 from flask import request, jsonify
 from models.favorite_list import FavoriteList
+from models.movies import Movies
+from models.rating import Rating
 from configs.db_connect import db
 from sqlalchemy import desc
 
@@ -59,7 +61,16 @@ def get_user_movie_favorites(user_id):
             .order_by(desc(FavoriteList.CreatedAt))
             .all()
         )
-        data = [favorite.to_dict() for favorite in favorites]
-        return jsonify({"success": True, "data": data}), 200
+        fav_movies = Movies.query.filter(
+            Movies.Id.in_([fav.MovieId for fav in favorites])
+        ).all()
+        movies = []
+        for fav in fav_movies:
+            rating = Rating.query.filter_by(UserId=user_id, MovieId=fav.Id).first()
+            real_rating = 0
+            if rating:
+                real_rating = rating.to_dict()["Rating"]
+            movies.append({**fav.to_dict(), "Rating": real_rating})
+        return jsonify({"success": True, "movies": movies}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

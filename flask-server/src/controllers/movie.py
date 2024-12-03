@@ -82,9 +82,9 @@ def update(movie_id):
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-def update_viewed(id):
+def update_viewed(movie_id):
     try:
-        movie = Movies.query.filter_by(Id=id).first()
+        movie = Movies.query.filter_by(Id=movie_id).first()
         if movie:
             movie.Viewed += 1
             db.session.commit()

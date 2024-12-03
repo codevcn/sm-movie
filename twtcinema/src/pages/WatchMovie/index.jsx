@@ -67,7 +67,7 @@ function WatchMovie() {
             setMovieDetail((pre) => ({ ...pre, ...movieDetailData.data }));
             setLoading(false);
         } catch (error) {
-            console.log('>>> error:', error);
+            console.error('>>> error:', error);
         }
     }
 
@@ -82,7 +82,7 @@ function WatchMovie() {
                 }
                 setEpisodes(data);
             } catch (error) {
-                console.log('>>> error:', error);
+                console.error('>>> error:', error);
             }
         }
     };
@@ -91,7 +91,7 @@ function WatchMovie() {
         try {
             await updateView(movieId);
         } catch (error) {
-            console.log('>>> error:', error);
+            console.error('>>> error:', error);
         }
     };
 
@@ -108,9 +108,9 @@ function WatchMovie() {
         if (user && movieId) {
             const handleAddHistory = async () => {
                 try {
-                    await addHistoryMovie(movieId, user.Id);
+                    await addHistoryMovie(playingEp.Id, user.Id);
                 } catch (error) {
-                    console.log(error);
+                    console.error('>>> error:', error);
                 }
             };
 

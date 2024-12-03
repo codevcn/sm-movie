@@ -168,9 +168,10 @@
     font-size: 1.7rem;
     padding: 0 10px;
     max-width: 190px;
+    cursor: pointer;
+
     &:hover {
         opacity: 0.8;
-        cursor: pointer;
     }
 }
 
@@ -187,6 +188,7 @@
     opacity: 0;
     padding: 5px 0;
     z-index: 9999;
+    cursor: pointer;
 }
 
 //modal confirm

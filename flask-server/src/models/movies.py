@@ -33,7 +33,7 @@ class Movies(db.Model):
 
     def __repr__(self):
         return (
-            f"<Movies(id='{self.Id}', Name='{self.Name}', Type='{self.Type}', "
+            f"<Movies(Id='{self.Id}', Name='{self.Name}', Type='{self.Type}', "
             f"ReleaseDate='{self.ReleaseDate}')>"
         )
 

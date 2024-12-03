@@ -38,7 +38,7 @@ function SearchBox() {
                 setSearchResult(result.data);
                 setLoading(false);
             } catch (error) {
-                console.log('>>> error:', error);
+                console.error('>>> error:', error);
             }
         };
 

@@ -50,9 +50,9 @@ export const addFavouriteMovie = (movie_id, user_id) => {
     return instance.post(url, { movie_id, user_id });
 };
 
-export const addHistoryMovie = (movieId, userId) => {
+export const addHistoryMovie = (episodeId, userId) => {
     const url = `/user/add-history`;
-    return instance.post(url, { movieId, userId });
+    return instance.post(url, { episodeId, userId });
 };
 
 export const rateAMovie = (movie_id, user_id, rating) => {
@@ -61,4 +61,12 @@ export const rateAMovie = (movie_id, user_id, rating) => {
 
 export const getRating = (movie_id, user_id) => {
     return instance.post('/user/get-rating', { movie_id, user_id });
+};
+
+export const uploadAvatar = (formData, user_id) => {
+    return instance.post('/user/upload-avatar/' + user_id, formData);
+};
+
+export const uploadImage = (formData) => {
+    return instance.post('/user/upload-image', formData);
 };

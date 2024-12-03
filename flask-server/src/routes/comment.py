@@ -16,7 +16,7 @@ def register_comment_routes(app: Flask):
 
     # Định nghĩa các tuyến API
     api_blueprint.add_url_rule(
-        "/get-comment/<int:id>", view_func=get_comment_by_id, methods=["GET"]
+        "/get-comment/<int:movie_id>", view_func=get_comment_by_id, methods=["GET"]
     )
     api_blueprint.add_url_rule(
         "/get-count-comment/<int:id>", view_func=get_count_comments, methods=["GET"]
@@ -33,10 +33,10 @@ def register_comment_routes(app: Flask):
         "/post-comment", view_func=post_comment, methods=["POST"]
     )
     api_blueprint.add_url_rule(
-        "/update-comment/<int:id>", view_func=update_comment, methods=["PUT"]
+        "/update-comment/<int:comment_id>", view_func=update_comment, methods=["PUT"]
     )
     api_blueprint.add_url_rule(
-        "/delete-comment/<int:id>", view_func=delete_comment, methods=["DELETE"]
+        "/delete-comment/<int:comment_id>", view_func=delete_comment, methods=["DELETE"]
     )
 
     # Đăng ký Blueprint

@@ -7,7 +7,7 @@ import Profile from '~/pages/Profile';
 const allRoute = [
     { path: '/', component: Category },
     { path: '/profile', component: Profile },
-    { path: '/:category', component: Category },
+    { path: '/:type', component: Category },
     { path: '/:type/:id', component: Detail },
     { path: '/:category/mores/:type', component: GridType },
     { path: '/genres/:name/:id', component: GridType },

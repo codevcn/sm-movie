@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GridType.module.scss';
@@ -14,8 +14,10 @@ const cs = classNames.bind(styles);
 function GridType() {
     const user = JSON.parse(localStorage.getItem('user'));
     const { category, type, name, id } = useParams();
-    const [lists, setLists] = useState([]);
+    const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(false);
+    console.log('>>> params:', { category, type, name, id });
+    console.log('>>> init:', { user, movies });
 
     useEffect(() => {
         async function getList() {
@@ -31,11 +33,11 @@ function GridType() {
                     break;
                 case 'favorite':
                     result = await requestApi.getFavoritesList(user.id);
-                    result.data = result.data.map((data) => data.movieId);
+                    result.data = result.movies;
                     break;
                 case 'history':
                     result = await requestApi.getHistoryList(user.id);
-                    result.data = result.data.map((data) => data.movieId);
+                    result.data = result.data.map((data) => data.MovieId);
 
                     break;
                 case 'search':
@@ -44,7 +46,7 @@ function GridType() {
                 default:
                     result = await requestApi.getGenresMovie(id);
             }
-            setLists(result.data);
+            setMovies(result.data);
             setLoading(false);
         }
         getList();
@@ -76,8 +78,8 @@ function GridType() {
             ) : (
                 <>
                     <div className={cs('movieList')}>
-                        {lists.map((list, index) => (
-                            <MovieItem key={index} category={list.category} list={list} className={cs('movieItem')} />
+                        {movies.map((movie, index) => (
+                            <MovieItem key={index} movie={movie} className={cs('movieItem')} />
                         ))}
                     </div>
                     <h4 className={cs('noMore')}>Đã hết kết quả</h4>

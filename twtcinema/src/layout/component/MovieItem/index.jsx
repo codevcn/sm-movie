@@ -8,17 +8,17 @@ import LazyLoad from 'react-lazy-load';
 
 const cs = classNames.bind(styles);
 
-function MovieItem({ category, list, className }) {
+function MovieItem({ type, movie, className }) {
     return (
-        <Link to={`/${category ?? 'tv'}/${list.Id}`} className={cs('card', className)}>
+        <Link to={`/${type ?? 'tv'}/${movie.Id}`} className={cs('card', className)}>
             <LazyLoad threshold={0.8}>
-                <img src={Img.posterImg(list.PosterPath)} style={{ width: '100%' }} alt="" />
+                <img src={Img.posterImg(movie.PosterPath)} style={{ width: '100%' }} alt="Bìa phim" />
             </LazyLoad>
             <div className={cs('rate')}>
-                <span>{list.IbmPoints}</span>
+                <span>{movie.Rating || 0}</span>
                 <FontAwesomeIcon className={cs('icon')} icon={faStar} />
             </div>
-            <p>{list.Title || list.Name}</p>
+            <p>{movie.Name}</p>
         </Link>
     );
 }

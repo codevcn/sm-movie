@@ -11,16 +11,17 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 const cs = classNames.bind(styles);
 
 function Category() {
-    const { category } = useParams();
+    const { type } = useParams();
 
-    if (category === 'movie') {
-        var categoryType = movieType;
+    let categoryType;
+    if (type === 'movie') {
+        categoryType = movieType;
     } else {
         categoryType = tvType;
     }
     return (
         <div className={cs('wrapper')}>
-            <SlideShow category={category} />
+            <SlideShow category={type} />
 
             <div className={cs('content')}>
                 {categoryType.map(function (type, index) {
@@ -34,12 +35,12 @@ function Category() {
                                         ? 'Đánh Giá Cao'
                                         : 'Phổ Biến'}
                                 </h4>
-                                <Link className={cs('seemore')} to={`/${category ?? 'tv'}/mores/${type}`}>
+                                <Link className={cs('seemore')} to={`/${type ?? 'tv'}/mores/${type}`}>
                                     <p className={cs('more')}>Xem tất cả</p>
                                     <FontAwesomeIcon className={cs('icon')} icon={faChevronRight} />
                                 </Link>
                             </div>
-                            <ListMovie category={category} type={type} />
+                            <ListMovie category={type} type={type} />
                         </div>
                     );
                 })}

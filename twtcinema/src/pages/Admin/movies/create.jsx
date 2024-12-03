@@ -9,13 +9,13 @@ import { useForm } from 'react-hook-form';
 import { createMovie } from '~/apiService/movie';
 import { getAll } from '~/apiService/genres';
 
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { UploadVideo } from './upload-video';
 import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { getAllCountries } from '../../../apiService/country';
+import { uploadImage } from '../../../apiService/user';
 
 const cs = classNames.bind(styles);
 
@@ -73,8 +73,6 @@ const CreateMovie = () => {
     const [typedData, setTypedData] = useState({ genreIds: [] });
     const [openPickGenres, setOpenPickGenres] = useState();
 
-    const storage = getStorage();
-
     const { register, handleSubmit } = useForm();
 
     const validateData = (data) => {
@@ -131,7 +129,7 @@ const CreateMovie = () => {
                 const res = await getAll();
                 setGenres(res.data);
             } catch (error) {
-                console.log('>>> error:', error);
+                console.error('>>> error:', error);
             }
         };
         const getCountries = async () => {
@@ -139,34 +137,24 @@ const CreateMovie = () => {
                 const { data } = await getAllCountries();
                 setCountries(data);
             } catch (error) {
-                console.log('>>> error:', error);
+                console.error('>>> error:', error);
             }
         };
         getGenres();
         getCountries();
     }, []);
 
-    const handleUploadImg = (e) => {
+    const handleUploadImg = async (e) => {
         const image = e.target.files[0];
         if (image) {
-            const storageRef = ref(storage, `images/${image.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, image);
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {},
-                (error) => {
-                    console.log(error);
-                },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                        try {
-                            setPosTer(downloadURL);
-                        } catch (error) {
-                            console.log('>>> error:', error);
-                        }
-                    });
-                },
-            );
+            const formData = new FormData();
+            formData.append('file', image);
+            try {
+                const res = await uploadImage(formData);
+                setPosTer(res.url);
+            } catch (error) {
+                toast.error('Tải lên bìa phim không thành công!');
+            }
         }
     };
 

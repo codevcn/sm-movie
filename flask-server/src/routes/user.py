@@ -6,6 +6,8 @@ from controllers.user import (
     update_user,
     change_password,
     delete_user,
+    upload_user_avatar,
+    upload_image,
 )
 from controllers.favorite_list import (
     get_list_favorites_movie,
@@ -47,6 +49,11 @@ def register_user_routes(app: Flask):
     api_blueprint.add_url_rule(
         "/delete-user-client", view_func=delete_user, methods=["PUT"]
     )
+    api_blueprint.add_url_rule(
+        "/upload-avatar/<string:user_id>",
+        view_func=upload_user_avatar,
+        methods=["POST"],
+    )
 
     # Định nghĩa các tuyến API cho favorite
     api_blueprint.add_url_rule(
@@ -65,7 +72,9 @@ def register_user_routes(app: Flask):
 
     # Định nghĩa các tuyến API cho history
     api_blueprint.add_url_rule(
-        "/user-history/<int:id>", view_func=get_user_movie_histories, methods=["GET"]
+        "/user-history/<int:user_id>",
+        view_func=get_user_movie_histories,
+        methods=["GET"],
     )
     api_blueprint.add_url_rule(
         "/add-history", view_func=add_histories_movie, methods=["POST"]
@@ -76,6 +85,11 @@ def register_user_routes(app: Flask):
         "/rate-a-movie", view_func=user_rate_movie, methods=["POST"]
     )
     api_blueprint.add_url_rule("/get-rating", view_func=get_rating, methods=["POST"])
+
+    # others
+    api_blueprint.add_url_rule(
+        "/upload-image", view_func=upload_image, methods=["POST"]
+    )
 
     # Đăng ký Blueprint
     app.register_blueprint(api_blueprint)

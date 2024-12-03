@@ -7,16 +7,23 @@ from configs.db_connect import db
 def add_histories_movie():
     try:
         user_id = request.json.get("userId")
-        movie_id = request.json.get("movieId")
+        episode_id = request.json.get("episodeId")
 
-        if not user_id or not movie_id:
+        if not user_id or not episode_id:
             return (
-                jsonify({"success": False, "message": "Thiếu userId hoặc movieId"}),
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Thiếu thông tin về người dùng hoặc tập phim",
+                    }
+                ),
                 400,
             )
 
         # Kiểm tra xem bản ghi đã tồn tại chưa
-        history = WatchHistory.query.filter_by(UserId=user_id, MovieId=movie_id).first()
+        history = WatchHistory.query.filter_by(
+            UserId=user_id, EpisodeId=episode_id
+        ).first()
 
         if history:
             # Cập nhật `created_at` để đưa bản ghi lên đầu
@@ -25,7 +32,7 @@ def add_histories_movie():
             return jsonify({"success": True, "message": "Đã xem phim lại gần đây"}), 200
         else:
             # Thêm bản ghi mới
-            new_history = WatchHistory(UserId=user_id, MovieId=movie_id)
+            new_history = WatchHistory(UserId=user_id, EpisodeId=episode_id)
             db.session.add(new_history)
             db.session.commit()
             return (

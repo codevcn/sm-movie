@@ -25,12 +25,12 @@ export const postComment = (data) => {
     return instance.post(url, data);
 };
 
-export const updateComment = (id,data) => {
-    const url = '/comment/update-comment/' + id;
-    return instance.put(url,data);
+export const updateComment = (comment_id, data) => {
+    const url = '/comment/update-comment/' + comment_id;
+    return instance.put(url, data);
 };
 
-export const deleteComment = (id) => {
-    const url = '/comment/delete-comment/' + id;
+export const deleteComment = (comment_id) => {
+    const url = '/comment/delete-comment/' + comment_id;
     return instance.delete(url);
 };

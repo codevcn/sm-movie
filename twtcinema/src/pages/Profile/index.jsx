@@ -10,26 +10,22 @@ import {
     faSpinner,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
-import { useContext, useRef, useState } from 'react';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-
-//Cần phải có dòng này
-import { firebaseConnect } from '~/components/Firebase';
-import { AuthContext } from '~/context';
+import { useRef, useState } from 'react';
 import { UpdateIcon } from '~/components/Icon';
 import image from '~/assets/Images';
 import { changePassword, deleteUserClient, updateUserClient } from '~/apiService/user';
+import { toast } from 'react-toastify';
+import Spinner from 'react-bootstrap/Spinner';
+import { uploadAvatar } from '../../apiService/user';
 
 const cs = classNames.bind(styles);
 
 function Profile() {
-    const storage = getStorage();
-
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
-    const { showToastMessage } = useContext(AuthContext);
 
     const [loading, setLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const refContent = useRef();
     const refIcon = useRef();
@@ -60,9 +56,16 @@ function Profile() {
             refContent.current.setAttribute('contentEditable', false);
             refIconSent.current.style = 'display : none';
             refIcon.current.style = 'display : block';
-            const res = await updateUserClient({ name: refContent.current.innerText }, user.email);
-            if (res.success) {
-                localStorage.setItem('user', JSON.stringify({ ...user, name: res.data.name }));
+            try {
+                const res = await updateUserClient({ Name: refContent.current.innerText }, user.email);
+                if (res.success) {
+                    toast.success(res.message);
+                    localStorage.setItem('user', JSON.stringify({ ...user, name: res.data.Name }));
+                } else {
+                    toast.error(res.message);
+                }
+            } catch (error) {
+                toast.error(error.message);
             }
         } else {
             refContent.current.setAttribute('contentEditable', false);
@@ -73,19 +76,25 @@ function Profile() {
 
     //Password
     const handleConfirmUpdate = async () => {
-        const res = await changePassword({
-            oldPassword: reAuthInput.current.value,
-            newPassword: refInputPass.current.value,
-            email: user.email,
-        });
-        if (res.success) {
-            showToastMessage('success', 'Cập nhật mật khẩu thành công');
+        let success = false;
+        let result;
+        try {
+            result = await changePassword({
+                oldPassword: reAuthInput.current.value,
+                newPassword: refInputPass.current.value,
+                email: user.email,
+            });
+            success = result.success;
+        } catch (error) {
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
+        }
+        if (success) {
+            toast.success('Cập nhật mật khẩu thành công');
             modalRef.current.classList.remove(cs('open'));
             reAuthInput.current.value = '';
             refInputPass.current.value = '';
             confirmBtn.current.removeEventListener('click', handleConfirmUpdate);
-        } else {
-            showToastMessage('error', 'Mật khẩu không chính xác');
         }
     };
 
@@ -95,21 +104,26 @@ function Profile() {
     };
 
     //Delete
-
     const handleConfirmDelete = async () => {
-        const res = await deleteUserClient({
-            email: user.email,
-            password: reAuthInput.current.value,
-        });
-        if (res.success) {
-            showToastMessage('success', 'Xóa thành công thành công');
+        let success = false;
+        let result;
+        try {
+            result = await deleteUserClient({
+                email: user.email,
+                password: reAuthInput.current.value,
+            });
+            success = result.success;
+        } catch (error) {
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
+        }
+        if (success) {
+            toast.success('Xóa người dùng thành công');
             modalRef.current.classList.remove(cs('open'));
             reAuthInput.current.value = '';
             confirmBtn.current.removeEventListener('click', handleConfirmDelete);
             localStorage.removeItem('user');
             navigate('/movie');
-        } else {
-            showToastMessage('error', 'Mật khẩu không chính xác');
         }
     };
 
@@ -118,41 +132,31 @@ function Profile() {
         confirmBtn.current.addEventListener('click', handleConfirmDelete);
     };
 
-    //Nếu lỗi thì xem đã import firebaseConnect từ component Firebase chưa chưa phải có dòng này
-
-    const handleUploadImg = (e) => {
+    const handleUploadImg = async (e) => {
         const image = e.target.files[0];
-        filterRef.current.classList.add(cs('filter'));
         if (image) {
-            const storageRef = ref(storage, `images/${image.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, image);
-
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {
-                    setLoading(true);
-                },
-                (error) => {
-                    showToastMessage('error', error.message);
-                    console.log(error);
-                },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                        try {
-                            filterRef.current.classList.remove(cs('filter'));
-                            const res = await updateUserClient({ avatar: downloadURL }, user.email);
-                            localStorage.setItem('user', JSON.stringify({ ...user, avatar: downloadURL }));
-                            showToastMessage('success', 'Cập nhật ảnh đại diện thành công');
-                            setLoading(false);
-                        } catch (error) {
-                            showToastMessage('error', error.message);
-                            console.log(error);
-                            // setLoading(false);
-                        }
-                    });
-                },
-            );
+            setLoading(true);
+            filterRef.current.classList.add(cs('filter'));
+            const formData = new FormData();
+            formData.append('file', image);
+            try {
+                const res = await uploadAvatar(formData, user.id);
+                if (res.success) {
+                    toast.success(res.message);
+                    localStorage.setItem('user', JSON.stringify({ ...user, avatar: res.url }));
+                } else {
+                    toast.error(res.message);
+                }
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra';
+                toast.error(errorMessage);
+            }
+            setLoading(false);
         }
+    };
+
+    const getUserAvatar = () => {
+        return user?.avatar || image.avatar;
     };
 
     if (!user) return <Navigate to="/movie" />;
@@ -208,9 +212,13 @@ function Profile() {
                         </div>
 
                         <div className={cs('delete')}>
-                            <button className={cs('deleteBtn')} onClick={handleDelete}>
-                                Xóa tài khoản
-                            </button>
+                            {deleteLoading ? (
+                                <Spinner animation="border" role="status"></Spinner>
+                            ) : (
+                                <button className={cs('deleteBtn')} onClick={handleDelete}>
+                                    Xóa tài khoản
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -219,8 +227,7 @@ function Profile() {
                     <h4 className={cs('title')}>Ảnh đại diện</h4>
                     <div className={cs('pictureContain')}>
                         {loading && <FontAwesomeIcon className={cs('iconLoading')} icon={faSpinner} />}
-                        <img src={user?.avatar || image.avatar} className={cs('imageProfile')} alt="" />
-
+                        <img src={getUserAvatar()} className={cs('imageProfile')} alt="Ảnh đại diện" />
                         <div ref={filterRef}></div>
                     </div>
 

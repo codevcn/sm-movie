@@ -12,6 +12,7 @@ import requestApi from '~/apiService';
 import { getEpisodes } from '../../apiService/episode';
 import { toast } from 'react-toastify';
 import { rateAMovie, getRating } from '../../apiService/user';
+import Comment from '../../layout/component/Comments';
 
 export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
     const navigate = useNavigate();
@@ -22,7 +23,6 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
     const greaterThan0 = ratingData > 0;
 
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log('>>> movie detail:', { movieDetail, genres, user });
 
     const typeMovie = () => {
         switch (Type.toLowerCase()) {
@@ -55,7 +55,7 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
                 console.error('>>> error:', error);
             }
         } else {
-            toast.error('info', 'Hãy đăng nhập để thực hiện hành động này');
+            toast.error('Hãy đăng nhập để thực hiện hành động này');
         }
     };
 
@@ -67,30 +67,36 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
                     setUserFavoriteMovies(result.data);
                 }
             } catch (error) {
-                console.log('>>> error:', error);
+                console.error('>>> error:', error);
             }
         }
     };
 
     const getRatingHandler = async () => {
-        try {
-            const { rating } = await getRating(Id, user.id);
-            setRatingData(rating.Rating);
-        } catch (error) {
-            console.error('>>> error:', error);
+        if (user) {
+            try {
+                const { rating } = await getRating(Id, user.id);
+                setRatingData(rating.Rating);
+            } catch (error) {
+                console.error('>>> error:', error);
+            }
         }
     };
 
     const handleRating = async (rate) => {
-        try {
-            const res = await rateAMovie(Id, user.id, rate);
-            toast.success(res.message);
-            if (res.success) {
-                getRatingHandler();
+        if (user) {
+            try {
+                const res = await rateAMovie(Id, user.id, rate);
+                toast.success(res.message);
+                if (res.success) {
+                    getRatingHandler();
+                }
+            } catch (error) {
+                setRatingData(0);
+                toast.error(error.message);
             }
-        } catch (error) {
-            setRatingData(0);
-            toast.error(error.message);
+        } else {
+            toast.error('Bạn phải đăng nhập để thực hiện chức năng này');
         }
     };
 
@@ -220,7 +226,7 @@ function InforDetail() {
             const { data } = await getEpisodes(id);
             setEpisodes(data);
         } catch (error) {
-            console.log('>>> error:', error);
+            console.error('>>> error:', error);
         }
     };
 
@@ -229,7 +235,7 @@ function InforDetail() {
             const { data } = await getMulti(id);
             setGenres(data);
         } catch (error) {
-            console.log('>>> error:', error);
+            console.error('>>> error:', error);
         }
     };
 
@@ -251,6 +257,7 @@ function InforDetail() {
                 <MovieCard movieDetail={movieDetail} genres={genres} watchNowBtn />
                 {episodes && <EpisodeList episodes={episodes} type={movieDetail.Type.toLowerCase()} />}
                 <Overview overview={movieDetail.Overview} />
+                <Comment MovieId={movieDetail.Id} />
             </div>
         )
     );
