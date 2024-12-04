@@ -7,10 +7,10 @@ function CountCmt({ movieId }) {
     useEffect(() => {
         const comment = async () => {
             try {
-                const count = await getCountComments(movieId);
-                setCount(count.counts);
+                const res = await getCountComments(movieId);
+                setCount(res.counts);
             } catch (error) {
-                console.log(error);
+                console.error('>>> error:', error);
             }
         };
         comment();

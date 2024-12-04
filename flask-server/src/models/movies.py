@@ -19,7 +19,7 @@ class Movies(db.Model):
     )  # ID quốc gia (có thể rỗng)
     Language = Column(String(255), nullable=True)  # Ngôn ngữ (có thể rỗng)
     Overview = Column(String(255), nullable=True)  # Tóm tắt (có thể rỗng)
-    Viewed = Column(Integer, nullable=True)  # Số lượt xem (có thể rỗng)
+    Viewed = Column(Integer, nullable=False, default=0)  # Số lượt xem (có thể rỗng)
     CreatedAt = Column(DateTime, nullable=True)  # Ngày tạo (có thể rỗng)
 
     Country = relationship("Countries", back_populates="Movies", lazy="select")

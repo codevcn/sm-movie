@@ -12,7 +12,6 @@ class WatchHistory(db.Model):
     EpisodeId = Column(
         Integer, ForeignKey("Episodes.Id"), nullable=False, primary_key=True
     )  # Trường `EpisodeId`, không được để trống
-    ProgressTime = Column(Time, nullable=False)  # Trường `ProgressTime`, kiểu thời gian
     CreatedAt = Column(
         DateTime, nullable=False, server_default=func.now()
     )  # Trường `CreatedAt`, mặc định là thời gian hiện tại

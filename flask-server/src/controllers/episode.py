@@ -2,6 +2,7 @@ from flask import request, jsonify
 from cloudinary.uploader import upload_large
 from io import BytesIO
 from models.episodes import Episodes
+from models.movies import Movies
 import mimetypes
 from configs.db_connect import db
 
@@ -44,10 +45,14 @@ def upload_episode():
             file_stream, resource_type="video", chunk_size=6000000, folder=upload_folder
         )
         ep_url = result["secure_url"]
+        movie_id = payload["movie_id"]
         episode = Episodes(
-            MovieId=payload["movie_id"], Source=ep_url, EpisodeNumber=payload["ep_num"]
+            MovieId=movie_id, Source=ep_url, EpisodeNumber=payload["ep_num"]
         )
         db.session.add(episode)
+        db.session.commit()
+        movie = Movies.query.filter_by(MovieId=movie_id).first()
+        movie.TotalEpisodes += 1
         db.session.commit()
         return jsonify({"url": ep_url}), 200
     except Exception as e:

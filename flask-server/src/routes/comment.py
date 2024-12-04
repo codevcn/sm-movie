@@ -19,7 +19,9 @@ def register_comment_routes(app: Flask):
         "/get-comment/<int:movie_id>", view_func=get_comment_by_id, methods=["GET"]
     )
     api_blueprint.add_url_rule(
-        "/get-count-comment/<int:id>", view_func=get_count_comments, methods=["GET"]
+        "/get-count-comment/<int:movie_id>",
+        view_func=get_count_comments,
+        methods=["GET"],
     )
     api_blueprint.add_url_rule(
         "/get-count-comment-month",

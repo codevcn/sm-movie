@@ -184,18 +184,30 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
     );
 };
 
-export const EpisodeList = ({ episodes, type }) => {
+export const EpisodeList = ({ episodes, movieDetail }) => {
+    const navigate = useNavigate();
+
+    const navigateToEp = (epNum) => {
+        navigate(`/${movieDetail.Type}/watch/${movieDetail.Id}?ep=${epNum}`);
+    };
+
     return (
         <div className="episode-list">
             <h2 className="episode-list-title">DANH SÁCH TẬP</h2>
-            {type === 'movie' ? (
+            {movieDetail.Type === 'movie' ? (
                 <div className="episode-buttons">
-                    <button className="episode-button">Tập Full</button>
+                    <button className="episode-button" onClick={() => navigateToEp(1)}>
+                        Tập Full
+                    </button>
                 </div>
             ) : (
                 <div className="episode-buttons">
                     {episodes.map(({ EpisodeNumber }) => (
-                        <button key={EpisodeNumber} className="episode-button">
+                        <button
+                            key={EpisodeNumber}
+                            className="episode-button"
+                            onClick={() => navigateToEp(EpisodeNumber)}
+                        >
                             {`Tập ${EpisodeNumber}`}
                         </button>
                     ))}
@@ -240,8 +252,14 @@ function InforDetail() {
     };
 
     async function getMovieDetail() {
-        const { data } = await requestApi.getDetails(id);
-        setMovieDetail((pre) => ({ ...pre, ...data }));
+        setLoading(true);
+        try {
+            const { data } = await requestApi.getDetails(id);
+            setMovieDetail((pre) => ({ ...pre, ...data }));
+        } catch (error) {
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
+        }
         setLoading(false);
     }
 
@@ -255,7 +273,9 @@ function InforDetail() {
         movieDetail && (
             <div className="movie-details">
                 <MovieCard movieDetail={movieDetail} genres={genres} watchNowBtn />
-                {episodes && <EpisodeList episodes={episodes} type={movieDetail.Type.toLowerCase()} />}
+                {episodes && (
+                    <EpisodeList episodes={episodes} type={movieDetail.Type.toLowerCase()} movieDetail={movieDetail} />
+                )}
                 <Overview overview={movieDetail.Overview} />
                 <Comment MovieId={movieDetail.Id} />
             </div>

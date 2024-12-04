@@ -5,14 +5,14 @@ import { Button, Form, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import requestApi from '~/apiService/index';
 import { deleteMovie, getMovieMonth } from '~/apiService/movie';
 import { Img } from '~/apiService/instance';
-import { AuthContext } from '~/context';
 import Panigation from '~/layout/component/Panigation';
 import CountCmt from './CountComment';
+import { toast } from 'react-toastify';
 
 const cs = classNames.bind(styles);
 
@@ -23,7 +23,6 @@ function MoviesPage() {
     const [currPage, setCurrPage] = useState(1);
     const [inputValue, setInputValue] = useState('');
     const [type, setCategory] = useState('all');
-    const { showToastMessage } = useContext(AuthContext);
 
     const { searchValue, month } = useParams();
     const navigate = useNavigate();
@@ -68,9 +67,16 @@ function MoviesPage() {
     }, [currPage, searchValue, type, month]);
 
     const handleDeleteMovie = async (id) => {
-        if (window.confirm('Bạn thật sự muốn xoá phim này')) {
-            const res = await deleteMovie(id);
-            showToastMessage('success', res.message);
+        if (window.confirm('Bạn xác nhận muốn xoá phim này?')) {
+            try {
+                const res = await deleteMovie(id);
+                if (res.success) {
+                    toast.success(res.message);
+                }
+            } catch (error) {
+                const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+                toast.error(msg);
+            }
             getAllMovies();
         }
     };

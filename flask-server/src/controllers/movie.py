@@ -6,6 +6,7 @@ from models.movies import Movies
 from models.comments import Comments
 from models.favorite_list import FavoriteList
 from models.watch_history import WatchHistory
+from models.episodes import Episodes
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 from models.movie_genres import MovieGenres
@@ -16,6 +17,7 @@ def create():
         data = request.get_json()
         movie_info = data.get("movie_info", None)
         genre_ids = data.get("genre_ids", None)
+
         if not movie_info or not genre_ids:
             return (
                 jsonify(
@@ -56,12 +58,38 @@ def create():
 
 
 def update(movie_id):
+    data = request.get_json()
+    genre_ids = data.get("genre_ids", None)
+    movie_info = data.get("movie_info", None)
+
+    if not movie_id or not genre_ids or not movie_info:
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Thông tin phim và danh sách thể loại không được phép trống!",
+                }
+            ),
+            400,
+        )
+
     try:
-        movie = Movies.query.get(movie_id)
+        movie_query = Movies.query.filter_by(Id=movie_id)
+        movie = movie_query.first()
+        db.session.commit()
+
+        # delete before adding genres
+        MovieGenres.query.filter_by(MovieId=movie_id).delete(synchronize_session=False)
+        db.session.commit()
+        # add genres
+        movie_genre_records = [
+            MovieGenres(MovieId=movie_id, GenreId=genre_id) for genre_id in genre_ids
+        ]
+        db.session.add_all(movie_genre_records)
+        db.session.commit()
+
         if movie:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(movie, key, value)
+            movie_query.update(movie_info)
             db.session.commit()
             return (
                 jsonify({"success": True, "message": "Cập nhật phim thành công"}),
@@ -72,7 +100,7 @@ def update(movie_id):
                 jsonify(
                     {
                         "success": False,
-                        "message": "Không tìm thấy trang hoặc yêu cầu!",
+                        "message": "Không tìm thấy phim!",
                     }
                 ),
                 404,
@@ -114,10 +142,16 @@ def delete(movie_id):
             db.session.delete(movie)
             db.session.commit()
 
+            episodes = Episodes.query.filter_by(MovieId=movie_id).all()
+
             # Xóa liên quan
+            Episodes.query.filter_by(MovieId=movie_id).delete()
+            MovieGenres.query.filter_by(MovieId=movie_id).delete()
             Comments.query.filter_by(MovieId=movie_id).delete()
             FavoriteList.query.filter_by(MovieId=movie_id).delete()
-            WatchHistory.query.filter_by(MovieId=movie_id).delete()
+            WatchHistory.query.filter(
+                WatchHistory.EpisodeId.in_([ep.to_dict().Id for ep in episodes])
+            ).delete()
             db.session.commit()
 
             return jsonify({"success": True, "message": "Xoá phim thành công"}), 200

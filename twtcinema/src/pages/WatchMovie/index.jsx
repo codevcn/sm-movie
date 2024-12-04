@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/iframe-has-title */
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useLocation } from 'react-router-dom';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -31,9 +31,10 @@ function WatchMovie() {
     const [movieDetail, setMovieDetail] = useState();
     const [loading, setLoading] = useState(true);
     const [episodes, setEpisodes] = useState();
-    console.log('>>> movie detail:', { movieDetail, movieId, type, playingEp });
+    const playingFlag = useRef(0);
 
     const user = JSON.parse(localStorage.getItem('user'));
+    console.log('>>> details:', { movieDetail, movieId, type, playingEp, user });
     const plyrOptions = {
         controls: [
             'play-large', // Nút phát ở giữa
@@ -56,6 +57,15 @@ function WatchMovie() {
         hideControls: true,
         tooltips: { controls: true, seek: true },
         seekTime: 10,
+        listeners: {
+            play: (e) => {
+                playingFlag.current = playingFlag.current + 1;
+                if (playingFlag.current === 1) {
+                    handleAddHistory();
+                    handleAddView();
+                }
+            },
+        },
     };
 
     async function getMovieDetail() {
@@ -95,32 +105,20 @@ function WatchMovie() {
         }
     };
 
-    useEffect(() => {
-        const index = setTimeout(() => {
-            handleAddView();
-        }, 10000);
-        getMovieDetail();
-        getEpisodesHandler();
-        return () => clearTimeout(index);
-    }, []);
+    useEffect(() => {}, [playingEp]);
 
-    useEffect(() => {
-        if (user && movieId) {
-            const handleAddHistory = async () => {
-                try {
-                    await addHistoryMovie(playingEp.Id, user.Id);
-                } catch (error) {
-                    console.error('>>> error:', error);
-                }
-            };
-
-            const index = setTimeout(() => {
-                handleAddHistory();
-            }, 10000);
-
-            return () => clearTimeout(index);
+    const handleAddHistory = async () => {
+        try {
+            await addHistoryMovie(playingEp.Id, user.id);
+        } catch (error) {
+            console.error('>>> error:', error);
         }
-    }, [movieId]);
+    };
+
+    useEffect(() => {
+        getEpisodesHandler();
+        getMovieDetail();
+    }, []);
 
     return (
         <div className="watch-movie-section">
@@ -140,7 +138,9 @@ function WatchMovie() {
                     />
                 </div>
             )}
-            {movieDetail && episodes && <EpisodeList episodes={episodes} type={movieDetail.Type} />}
+            {movieDetail && episodes && (
+                <EpisodeList episodes={episodes} type={movieDetail.Type} movieDetail={movieDetail} />
+            )}
             {movieDetail && genres && genres.length > 0 && (
                 <div className="movie-details">
                     <h2 className="movie-details-title">THÔNG TIN PHIM</h2>

@@ -17,8 +17,8 @@ export const createMovie = (data) => {
     return instance.post(url, data);
 };
 
-export const editMovie = (data, id) => {
-    const url = '/update/' + id;
+export const editMovie = (data, movie_id) => {
+    const url = '/update/' + movie_id;
     return instance.put(url, data);
 };
 
@@ -27,7 +27,7 @@ export const updateView = (movie_id) => {
     return instance.put(url);
 };
 
-export const deleteMovie = (id) => {
-    const url = '/delete/' + id;
+export const deleteMovie = (movie_id) => {
+    const url = '/delete/' + movie_id;
     return instance.delete(url);
 };

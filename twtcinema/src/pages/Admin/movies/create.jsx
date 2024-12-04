@@ -159,8 +159,7 @@ const CreateMovie = () => {
     };
 
     const writeTextForPickedGenres = (genreIds) => {
-        const len = genreIds.length;
-        if (len > 0) {
+        if (genreIds.length > 0 && genres.length > 0) {
             return genreIds.map((genreId, index) => `${genres.find(({ Id }) => Id === genreId).Name}`).join(', ');
         } else {
             return 'Bạn chưa chọn thể loại!';
@@ -169,13 +168,13 @@ const CreateMovie = () => {
 
     return (
         <div className={cs('movie')}>
-            <h3 className="text-center mb-3 fs-1 fw-bold">Sửa thông tin cho phim mới</h3>
+            <h3 className="text-center mb-3 fs-1 fw-bold">Thêm phim mới</h3>
             <Form className={cs('movie_form')} onSubmit={handleSubmit(Onsubmit)}>
                 <Row>
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Tên phim</Form.Label>
-                            <Form.Control required type="text" {...register('Name', { value: 'Chú bé trắng' })} />
+                            <Form.Control required type="text" {...register('Name')} />
                         </Form.Group>
                     </Col>
                 </Row>
@@ -183,7 +182,7 @@ const CreateMovie = () => {
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Danh mục</Form.Label>
-                            <Form.Select {...register('Type', { value: movieInfo.type, onChange: changeType })}>
+                            <Form.Select {...register('Type', { onChange: changeType })}>
                                 <option value="MOVIE">Phim Lẻ</option>
                                 <option value="SERIES">Phim Dài Tập</option>
                             </Form.Select>
@@ -219,10 +218,7 @@ const CreateMovie = () => {
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Ngôn ngữ</Form.Label>
-                            <Form.Select {...register('Language', { value: 'en' })}>
-                                <option value="en">Tiếng Anh</option>
-                                <option value="vi">Tiếng Việt</option>
-                            </Form.Select>
+                            <Form.Control required type="text" {...register('Language')} />
                         </Form.Group>
                     </Col>
                     <Col>
@@ -242,12 +238,7 @@ const CreateMovie = () => {
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Tóm tắt phim</Form.Label>
-                            <Form.Control
-                                required
-                                as="textarea"
-                                type="text"
-                                {...register('Overview', { value: 'Chú bé trắng chơi nền trên tuyết!!!' })}
-                            />
+                            <Form.Control required as="textarea" type="text" {...register('Overview')} />
                         </Form.Group>
                     </Col>
                 </Row>
@@ -255,7 +246,7 @@ const CreateMovie = () => {
                     <Col>
                         <Form.Group className="mb-3">
                             <Form.Label>Ngày phát hành</Form.Label>
-                            <Form.Control required type="date" {...register('ReleaseDate', { value: '2024-11-15' })} />
+                            <Form.Control required type="date" {...register('ReleaseDate')} />
                         </Form.Group>
                     </Col>
                 </Row>
@@ -265,7 +256,7 @@ const CreateMovie = () => {
                             <Form.Label>Ảnh đại diện</Form.Label>
                             {posTer && <img className={cs('movie_backdrop_path')} src={posTer} alt="Ảnh đại diện" />}
                             <Form.Control
-                                // required
+                                required
                                 className="mt-4"
                                 type="file"
                                 accept="image/*"

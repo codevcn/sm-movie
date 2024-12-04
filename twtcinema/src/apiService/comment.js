@@ -15,8 +15,8 @@ export const getCommentMonth = () => {
     return instance.get(url);
 };
 
-export const getCountComments = (id) => {
-    const url = '/comment/get-count-comment/' + id;
+export const getCountComments = (movie_id) => {
+    const url = '/comment/get-count-comment/' + movie_id;
     return instance.get(url);
 };
 

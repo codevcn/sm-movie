@@ -12,7 +12,6 @@ def get_all_countries():
                 Countries.query.offset(limit * (curr_page - 1)).limit(limit).all()
             )
             count_documents = Countries.query.count()
-            print(">>> countries:", countries)
             return (
                 jsonify(
                     {
@@ -25,7 +24,6 @@ def get_all_countries():
             )
         else:
             countries = Countries.query.all()
-            print(">>> countries:", countries)
             return (
                 jsonify(
                     {
