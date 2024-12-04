@@ -35,6 +35,7 @@ function WatchMovie() {
 
     const user = JSON.parse(localStorage.getItem('user'));
     console.log('>>> details:', { movieDetail, movieId, type, playingEp, user });
+    
     const plyrOptions = {
         controls: [
             'play-large', // Nút phát ở giữa
@@ -68,6 +69,20 @@ function WatchMovie() {
         },
     };
 
+    const handleSetPlayingEp = (episodes) => {
+        if (episodes && episodes.length > 0) {
+            for (const ep of episodes) {
+                if (ep.EpisodeNumber === parseInt(episodeNumber)) {
+                    setPlayingEp(ep);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        handleSetPlayingEp(episodes);
+    }, [episodeNumber, episodes]);
+
     async function getMovieDetail() {
         setLoading(true);
         try {
@@ -85,11 +100,6 @@ function WatchMovie() {
         if (movieId) {
             try {
                 const { data } = await getEpisodes(movieId);
-                for (const ep of data) {
-                    if (ep.EpisodeNumber === parseInt(episodeNumber)) {
-                        setPlayingEp(ep);
-                    }
-                }
                 setEpisodes(data);
             } catch (error) {
                 console.error('>>> error:', error);
@@ -123,7 +133,7 @@ function WatchMovie() {
     return (
         <div className="watch-movie-section">
             {playingEp && (
-                <div className="video-player">
+                <div className="video-player-wrapper">
                     <Plyr
                         source={{
                             type: 'video',

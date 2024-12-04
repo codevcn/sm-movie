@@ -32,7 +32,6 @@ def create():
         # add movie
         movie = Movies(**movie_info)
         db.session.add(movie)
-        db.session.commit()
 
         # add genres
         movie_id = movie.Id
@@ -40,8 +39,8 @@ def create():
             MovieGenres(MovieId=movie_id, GenreId=genre_id) for genre_id in genre_ids
         ]
         db.session.add_all(movie_genre_records)
-        db.session.commit()
 
+        db.session.commit()
         return (
             jsonify(
                 {
@@ -76,17 +75,14 @@ def update(movie_id):
     try:
         movie_query = Movies.query.filter_by(Id=movie_id)
         movie = movie_query.first()
-        db.session.commit()
 
         # delete before adding genres
         MovieGenres.query.filter_by(MovieId=movie_id).delete(synchronize_session=False)
-        db.session.commit()
         # add genres
         movie_genre_records = [
             MovieGenres(MovieId=movie_id, GenreId=genre_id) for genre_id in genre_ids
         ]
         db.session.add_all(movie_genre_records)
-        db.session.commit()
 
         if movie:
             movie_query.update(movie_info)
@@ -139,19 +135,30 @@ def delete(movie_id):
     try:
         movie = Movies.query.get(movie_id)
         if movie:
-            db.session.delete(movie)
-            db.session.commit()
-
             episodes = Episodes.query.filter_by(MovieId=movie_id).all()
+            count_eps = len(episodes)
+            if count_eps > 0:
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": "Không thể xóa phim đã có tập phim!",
+                        }
+                    ),
+                    400,
+                )
 
             # Xóa liên quan
-            Episodes.query.filter_by(MovieId=movie_id).delete()
             MovieGenres.query.filter_by(MovieId=movie_id).delete()
             Comments.query.filter_by(MovieId=movie_id).delete()
             FavoriteList.query.filter_by(MovieId=movie_id).delete()
             WatchHistory.query.filter(
                 WatchHistory.EpisodeId.in_([ep.to_dict().Id for ep in episodes])
             ).delete()
+
+            # Sau khi xóa liên quan sẽ xóa phim
+            db.session.delete(movie)
+
             db.session.commit()
 
             return jsonify({"success": True, "message": "Xoá phim thành công"}), 200
@@ -178,13 +185,13 @@ def get_all_movies():
         elif category and category != "all":
             query = query.filter(Movies.Type == category)
 
-        count_documents = query.count()
         movies = (
             query.order_by(Movies.ReleaseDate.desc())
             .offset((curr_page - 1) * limit)
             .limit(limit)
             .all()
         )
+        count_documents = query.count()
 
         return (
             jsonify(

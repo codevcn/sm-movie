@@ -19,7 +19,7 @@ function UsersPage() {
             const users = await getAll();
             setUsers(users.data);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

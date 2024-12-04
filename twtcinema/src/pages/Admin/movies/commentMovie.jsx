@@ -24,7 +24,7 @@ function CommentMovie() {
             }
             setLoading(true);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
     useEffect(() => {
@@ -36,7 +36,7 @@ function CommentMovie() {
             await deleteComment(id);
             getCommentByid();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
     return (

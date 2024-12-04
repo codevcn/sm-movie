@@ -35,7 +35,7 @@ const EditGenres = () => {
                     reset(res.data);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
         getGenres();

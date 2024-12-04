@@ -31,7 +31,7 @@ function Comment({ MovieId }) {
             const res = await getCommentByMovie(MovieId);
             setComments(res.data);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

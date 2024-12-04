@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { createMovie } from '~/apiService/movie';
 import { getAll } from '~/apiService/genres';
 
-import { UploadVideo } from './upload-video';
+import { UploadEpisode } from './upload-episode';
 import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
@@ -278,7 +278,7 @@ const CreateMovie = () => {
                 </button>
             </Form>
 
-            {movieInfo.id && <UploadVideo movieType={movieInfo.type} movieId={movieInfo.id} />}
+            {movieInfo.id && <UploadEpisode movieType={movieInfo.type} movieId={movieInfo.id} />}
         </div>
     );
 };

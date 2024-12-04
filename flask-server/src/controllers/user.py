@@ -254,11 +254,7 @@ def upload_image():
 
 # Upload file lên Cloudinary
 def upload_image_util(file):
-    try:
-        # Upload file lên Cloudinary
-        upload_folder = "web-xem-phim/images"
-        upload_result = cloudinary.uploader.upload(file, folder=upload_folder)
-
-        return upload_result
-    except Exception as e:
-        return None
+    # Upload file lên Cloudinary
+    upload_folder = "web-xem-phim/images"
+    upload_result = cloudinary.uploader.upload(file, folder=upload_folder)
+    return upload_result

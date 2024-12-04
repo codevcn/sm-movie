@@ -186,6 +186,7 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
 
 export const EpisodeList = ({ episodes, movieDetail }) => {
     const navigate = useNavigate();
+    const sortedEpisodes = [...episodes].sort((a, b) => a.age - b.age);
 
     const navigateToEp = (epNum) => {
         navigate(`/${movieDetail.Type}/watch/${movieDetail.Id}?ep=${epNum}`);
@@ -202,7 +203,7 @@ export const EpisodeList = ({ episodes, movieDetail }) => {
                 </div>
             ) : (
                 <div className="episode-buttons">
-                    {episodes.map(({ EpisodeNumber }) => (
+                    {sortedEpisodes.map(({ EpisodeNumber }) => (
                         <button
                             key={EpisodeNumber}
                             className="episode-button"

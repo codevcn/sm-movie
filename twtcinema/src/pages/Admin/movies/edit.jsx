@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import { getAllCountries } from '../../../apiService/country';
 import { uploadImage } from '../../../apiService/user';
 import moment from 'moment';
+import { UploadEpisodes } from './edit-episode';
 
 const cs = classNames.bind(styles);
 
@@ -76,7 +77,6 @@ const EditMovie = () => {
     const [typedData, setTypedData] = useState({ genreIds: [] });
     const [openPickGenres, setOpenPickGenres] = useState();
     const [loading, setLoading] = useState(false);
-    console.log('>>> info:', { movieInfo, genres });
 
     const { register, handleSubmit } = useForm();
 
@@ -144,6 +144,7 @@ const EditMovie = () => {
         setEditInfoStatus('loading');
         try {
             const res = await editMovie({ movie_info, genre_ids: pickedGenreIds }, id);
+            setMovieInfo((pre) => ({ ...pre, ...data }));
             toast.success(res.message);
         } catch (error) {
             toast.error(error.message);
@@ -339,11 +340,12 @@ const EditMovie = () => {
                                 ) : (
                                     <>
                                         <FontAwesomeIcon icon={faCircleCheck} />
-                                        <span>Lưu thông tin</span>
+                                        <span>Lưu thông tin phim</span>
                                     </>
                                 )}
                             </button>
                         </Form>
+                        <UploadEpisodes movieDetail={movieInfo} />
                     </>
                 )
             )}

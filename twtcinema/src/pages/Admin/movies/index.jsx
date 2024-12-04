@@ -28,6 +28,8 @@ function MoviesPage() {
     const navigate = useNavigate();
     const inputRef = useRef();
 
+    console.log('>>> stuff:', { movies });
+
     const handleChange = (e) => {
         const inputValue = e.target.value;
         if (!inputValue.startsWith(' ')) {
@@ -36,6 +38,7 @@ function MoviesPage() {
     };
 
     const getAllMovies = async (currPage) => {
+        console.log('>>> get all stuff:', { currPage, type });
         try {
             if (month) {
                 const result = await getMovieMonth();
@@ -58,7 +61,7 @@ function MoviesPage() {
                 }
             }
         } catch (error) {
-            console.log(error);
+            console.error('>>> error:', error);
         }
     };
 
@@ -66,18 +69,19 @@ function MoviesPage() {
         getAllMovies(currPage);
     }, [currPage, searchValue, type, month]);
 
-    const handleDeleteMovie = async (id) => {
-        if (window.confirm('Bạn xác nhận muốn xoá phim này?')) {
+    const handleDeleteMovie = async (id, movieName) => {
+        if (window.confirm(`Bạn xác nhận muốn xoá phim "${movieName}"?`)) {
             try {
                 const res = await deleteMovie(id);
                 if (res.success) {
                     toast.success(res.message);
                 }
             } catch (error) {
+                console.error('>>> error:', error);
                 const msg = error.response?.data?.message || 'Có lỗi xảy ra';
                 toast.error(msg);
             }
-            getAllMovies();
+            getAllMovies(currPage);
         }
     };
 
@@ -184,7 +188,10 @@ function MoviesPage() {
                                                         Sửa
                                                     </button>
                                                 </Link>
-                                                <Button variant="danger" onClick={() => handleDeleteMovie(movie.Id)}>
+                                                <Button
+                                                    variant="danger"
+                                                    onClick={() => handleDeleteMovie(movie.Id, movie.Name)}
+                                                >
                                                     Xoá
                                                 </Button>
                                             </div>

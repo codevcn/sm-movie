@@ -1,0 +1,161 @@
+$myvar-regular-text-fontsize: 1.5rem;
+$myvar-regular-icon-fontsize: 1.5rem;
+
+.upload-eps-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 30px;
+
+    .upload-eps-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+    }
+
+    .eps-list {
+        margin-top: 20px;
+        width: 100%;
+
+        .ep-container {
+            display: flex;
+            column-gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+
+            .ep-text {
+                width: fit-content;
+                font-weight: bold;
+            }
+
+            .ep-number-value {
+                border: none;
+                outline: none;
+                background-color: transparent;
+                font-size: $myvar-regular-text-fontsize;
+                width: 200px;
+                border: 1px black solid;
+                border-radius: 5px;
+                font-weight: bold;
+                padding: 7px;
+            }
+
+            .change-video-btn {
+                display: flex;
+                column-gap: 10px;
+                justify-content: center;
+                align-items: center;
+                padding: 3px 20px;
+                background-color: var(--primary);
+                color: white;
+                font-weight: bold;
+                border-radius: 5px;
+                cursor: pointer;
+                border: 2px var(--primary) solid;
+                width: 100%;
+
+                &:hover {
+                    background-color: white;
+                    color: var(--primary);
+                }
+
+                .change-video-icon {
+                    font-size: $myvar-regular-icon-fontsize;
+                }
+
+                .spinner {
+                    margin: 0 auto;
+                }
+            }
+
+            .preview-ep-btn {
+                display: flex;
+                column-gap: 10px;
+                justify-content: center;
+                align-items: center;
+                padding: 3px 20px;
+                background-color: var(--primary);
+                color: white;
+                font-weight: bold;
+                border-radius: 5px;
+                cursor: pointer;
+                border: 2px var(--primary) solid;
+                width: 100%;
+
+                &:hover {
+                    background-color: white;
+                    color: var(--primary);
+                }
+
+                .preview-ep-icon {
+                    font-size: $myvar-regular-icon-fontsize;
+                }
+            }
+        }
+
+        .ep-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background-color: rgba(172, 21, 1, 0.1);
+            border-radius: 10px;
+            border: 1.5px dashed rgba(172, 21, 1, 0.8);
+            width: fit-content;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-weight: bold;
+
+            .upload-icon-wrapper {
+                display: flex;
+                position: relative;
+                width: fit-content;
+                aspect-ratio: 1/1;
+
+                .upload-icon {
+                    font-size: 3.5rem;
+                    color: var(--primary);
+                    margin: auto;
+                    animation: none;
+                }
+
+                .spinner {
+                    margin: 10px auto;
+                }
+            }
+        }
+    }
+}
+
+.modal-dialog {
+    .modal-content {
+        .modal-body {
+            .modal-body-content {
+                .content-title {
+                    font-weight: bold;
+                    font-size: 1.3rem;
+                }
+
+                .video-player-wrapper {
+                    height: 500px;
+
+                    .plyr {
+                        height: 100%;
+                    }
+                }
+            }
+        }
+
+        .modal-footer {
+            button {
+                font-size: 1.3rem;
+            }
+        }
+    }
+}

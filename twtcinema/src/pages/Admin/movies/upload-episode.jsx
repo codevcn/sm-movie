@@ -8,11 +8,11 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
 import Plyr from 'plyr-react';
 import 'plyr-react/plyr.css';
-import './Upload-Video.scss';
+import './Upload-episode.scss';
 import { useNavigate } from 'react-router-dom';
 
 //https://res.cloudinary.com/doe8ogwij/video/upload/v1732879138/web-xem-phim/videos/akyz0w1cjjxjx6njp2rl.mp4
-export const UploadVideo = ({ movieType, movieId }) => {
+export const UploadEpisode = ({ movieType, movieId }) => {
     const [video, setVideo] = useState();
     const [uploadStatus, setUploadStatus] = useState();
     const [movieURL, setMovieURL] = useState();
@@ -42,12 +42,14 @@ export const UploadVideo = ({ movieType, movieId }) => {
             const data = await uploadEpisode(formData);
             url = data.url;
         } catch (error) {
-            toast.error('Failed to upload video.');
+            toast.error('Tải lên tập phim thất bại!');
         }
         if (url) {
-            toast.success('Upload successful!');
+            toast.success('Tải lên tập phim thành công!');
             setMovieURL(url);
-            // naviagte('/admin/dashboard/movies');
+            setTimeout(() => {
+                naviagte('/admin/dashboard/movies');
+            }, 1000);
         }
         setUploadStatus('done');
     };

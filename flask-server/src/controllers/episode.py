@@ -17,44 +17,45 @@ def is_valid_video(file):
     return mime_type in valid_mime_types
 
 
+def upload_video(file):
+    file_stream = BytesIO(file.read())
+    upload_folder = "web-xem-phim/videos"
+    result = upload_large(
+        file_stream, resource_type="video", chunk_size=6000000, folder=upload_folder
+    )
+    return result
+
+
 def upload_episode():
     files = request.files
     if "file" not in files:
-        return jsonify({"error": "No file part"}), 400
+        return jsonify({"error": "Không tìm thấy file"}), 400
 
     file = files["file"]
 
     if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
+        return jsonify({"error": "Không tìm thấy file"}), 400
 
     # Xác thực định dạng tệp
     if not is_valid_video(file):
         return (
-            jsonify({"error": "Invalid file format. Only MP4 and WebM are allowed."}),
+            jsonify({"error": "File không hợp lệ, chỉ chấp nhận file MP4 hoặc WebM."}),
             400,
         )
 
-    # Chuyển FileStorage thành BytesIO
-    file_stream = BytesIO(file.read())
-
-    upload_folder = "web-xem-phim/videos"
-    payload = request.form
-
     try:
-        result = upload_large(
-            file_stream, resource_type="video", chunk_size=6000000, folder=upload_folder
-        )
+        result = upload_video(file)
         ep_url = result["secure_url"]
+        payload = request.form
         movie_id = payload["movie_id"]
         episode = Episodes(
             MovieId=movie_id, Source=ep_url, EpisodeNumber=payload["ep_num"]
         )
         db.session.add(episode)
-        db.session.commit()
-        movie = Movies.query.filter_by(MovieId=movie_id).first()
+        movie = Movies.query.filter_by(Id=movie_id).first()
         movie.TotalEpisodes += 1
         db.session.commit()
-        return jsonify({"url": ep_url}), 200
+        return jsonify({"url": ep_url, "episode": episode.to_dict()}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -112,3 +113,36 @@ def get_ep_data(movie_id, ep_num):
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+def edit_ep(ep_id):
+    files = request.files
+    if "file" not in files:
+        return jsonify({"error": "Không tìm thấy file"}), 400
+
+    file = files["file"]
+
+    if file.filename == "":
+        return jsonify({"error": "Không tìm thấy file"}), 400
+
+    # Xác thực định dạng tệp
+    if not is_valid_video(file):
+        return (
+            jsonify({"error": "File không hợp lệ, chỉ chấp nhận file MP4 hoặc WebM."}),
+            400,
+        )
+
+    try:
+        result = upload_video(file)
+        ep_url = result["secure_url"]
+        Episodes.query.filter_by(Id=ep_id).update({"Source": ep_url})
+        db.session.commit()
+        return jsonify(
+            {
+                "success": True,
+                "message": "Đã sửa thông tin tập phim thành công",
+                "new_ep_url": ep_url,
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)})

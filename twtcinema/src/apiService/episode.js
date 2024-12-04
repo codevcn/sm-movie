@@ -15,3 +15,7 @@ export const getEpisodes = async (movieId) => {
 export const getEpisodeData = async (movieId, epNum) => {
     return instance.get(`/episode/get-ep-data/${movieId}/${epNum}`);
 };
+
+export const editEpisode = async (ep_id, formData) => {
+    return instance.post('/episode/edit-ep/' + ep_id, formData);
+};

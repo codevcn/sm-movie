@@ -1,4 +1,4 @@
-from controllers.episode import upload_episode, get_all_episodes, get_ep_data
+from controllers.episode import upload_episode, get_all_episodes, get_ep_data, edit_ep
 
 from flask import Blueprint, Flask
 
@@ -16,6 +16,11 @@ def register_video_routes(app: Flask):
         "/get-ep-data/<string:movie_id>/<string:ep_num>",
         view_func=get_ep_data,
         methods=["GET"],
+    )
+    api_blueprint.add_url_rule(
+        "/edit-ep/<string:ep_id>",
+        view_func=edit_ep,
+        methods=["POST"],
     )
 
     # Register Blueprint

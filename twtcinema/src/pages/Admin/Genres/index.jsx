@@ -24,7 +24,7 @@ function GenresPage() {
             }
             setLoading(false);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
     useEffect(() => {
@@ -37,7 +37,7 @@ function GenresPage() {
                 await deleteGenres(id);
                 getGenres();
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         }
     };

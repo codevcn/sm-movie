@@ -49,7 +49,7 @@ const EditUser = () => {
                     reset(res.data);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
         getUser();
@@ -64,14 +64,14 @@ const EditUser = () => {
                 'state_changed',
                 (snapshot) => {},
                 (error) => {
-                    console.log(error);
+                    console.error(error);
                 },
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
                         try {
                             setAvatar(downloadURL);
                         } catch (error) {
-                            console.log(error);
+                            console.error(error);
                             // setLoading(false);
                         }
                     });
