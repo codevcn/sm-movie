@@ -214,9 +214,7 @@ def get_movie_detail(id):
             return jsonify({"success": True, "data": movie.to_dict()}), 200
         else:
             return (
-                jsonify(
-                    {"success": False, "message": "Không tìm thấy trang hoặc yêu cầu"}
-                ),
+                jsonify({"success": False, "message": "Không tìm thấy phim"}),
                 404,
             )
     except SQLAlchemyError as e:

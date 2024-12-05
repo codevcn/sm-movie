@@ -21,30 +21,32 @@ function GridType() {
 
     useEffect(() => {
         async function getList() {
-            let result = null;
+            let result = { data: null };
             setLoading(true);
-
             switch (category) {
                 case 'movie':
-                    result = await requestApi.getTypeMovie(type, { params: {} });
+                    const moviesData = await requestApi.getTypeMovie(type, { params: {} });
+                    result = moviesData;
                     break;
                 case 'tv':
-                    result = await requestApi.getTypeTV(type, { params: {} });
+                    const tvdData = await requestApi.getTypeTV(type, { params: {} });
+                    result = tvdData;
                     break;
                 case 'favorite':
-                    result = await requestApi.getFavoritesList(user.id);
-                    result.data = result.movies;
+                    const favoriteData = await requestApi.getFavoritesList(user.id);
+                    result.data = favoriteData.movies;
                     break;
                 case 'history':
-                    result = await requestApi.getHistoryList(user.id);
-                    result.data = result.data.map((data) => data.MovieId);
-
+                    const historyData = await requestApi.getHistoryList(user.id);
+                    result.data = historyData.movies;
                     break;
                 case 'search':
-                    result = await requestApi.getSearch({ params: { keyword: type } });
+                    const searchData = await requestApi.getSearch({ params: { keyword: type } });
+                    result = searchData;
                     break;
                 default:
-                    result = await requestApi.getGenresMovie(id);
+                    const res = await requestApi.getGenresMovie(id);
+                    result = res;
             }
             setMovies(result.data);
             setLoading(false);
@@ -78,9 +80,11 @@ function GridType() {
             ) : (
                 <>
                     <div className={cs('movieList')}>
-                        {movies.map((movie, index) => (
-                            <MovieItem key={index} movie={movie} className={cs('movieItem')} />
-                        ))}
+                        {movies &&
+                            movies.length > 0 &&
+                            movies.map((movie, index) => (
+                                <MovieItem category={category} key={index} movie={movie} className={cs('movieItem')} />
+                            ))}
                     </div>
                     <h4 className={cs('noMore')}>Đã hết kết quả</h4>
                 </>

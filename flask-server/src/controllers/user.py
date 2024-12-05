@@ -47,7 +47,7 @@ def get_detail(email):
                 jsonify(
                     {
                         "success": False,
-                        "message": "Không tìm thấy trang hoặc yêu cầu!",
+                        "message": "Không tìm thấy người dùng!",
                     }
                 ),
                 404,

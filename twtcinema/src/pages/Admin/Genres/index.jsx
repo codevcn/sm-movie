@@ -6,6 +6,7 @@ import { deleteGenres, getAll } from '~/apiService/genres';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Panigation from '~/layout/component/Panigation';
+import { toast } from 'react-toastify';
 
 const cs = classNames.bind(styles);
 
@@ -14,30 +15,36 @@ function GenresPage() {
     const [pages, setPages] = useState(1);
     const [currPage, setCurrPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    console.log('>>> genres:', genres);
 
     const getGenres = async () => {
         try {
             const res = await getAll(currPage, 15);
             if (res.success) {
+                toast.success(res.message);
                 setGenres(res.data);
                 setPages(res.pages);
             }
             setLoading(false);
         } catch (error) {
-            console.error(error);
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
     };
+
     useEffect(() => {
         getGenres();
     }, [currPage]);
 
-    const handleDeleteGenres = async (id) => {
-        if (window.confirm('Bạn thật sự muốn xoá thể loại này')) {
+    const handleDeleteGenres = async (id, Name) => {
+        if (window.confirm(`Bạn xác nhận muốn xoá thể loại "${Name}"?`)) {
             try {
-                await deleteGenres(id);
+                const res = await deleteGenres(id);
                 getGenres();
+                toast.success(res.message);
             } catch (error) {
-                console.error(error);
+                const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+                toast.error(msg);
             }
         }
     };
@@ -60,13 +67,13 @@ function GenresPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {genres.map((item, index) => (
-                                <tr key={index}>
+                            {genres.map(({ Id, Name }, index) => (
+                                <tr key={Id}>
                                     <td className="text-center">{index + 1}</td>
-                                    <td className="text-center">{item.Name}</td>
+                                    <td className="text-center">{Name}</td>
                                     <td className="text-center">
-                                        <Link to={`/admin/dashboard/genres/edit/${item.Id}`}>Sửa</Link>
-                                        <Button variant="danger" onClick={() => handleDeleteGenres(item.Id)}>
+                                        <Link to={`/admin/dashboard/genres/edit/${Id}`}>Sửa</Link>
+                                        <Button variant="danger" onClick={() => handleDeleteGenres(Id, Name)}>
                                             Xoá
                                         </Button>
                                     </td>

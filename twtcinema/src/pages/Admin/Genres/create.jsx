@@ -1,29 +1,29 @@
 /* eslint-disable eqeqeq */
 import styles from './Genres.module.scss';
 import classNames from 'classnames/bind';
-import { Button, Form } from 'react-bootstrap';
-import { useContext } from 'react';
+import { Form } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { createGenres } from '~/apiService/genres';
-import { AuthContext } from '~/context';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const cs = classNames.bind(styles);
 
 const CreateGenres = () => {
-    const { showToastMessage } = useContext(AuthContext);
     const naviagte = useNavigate();
 
     const { register, handleSubmit, reset } = useForm();
 
     const Onsubmit = async (data) => {
+        console.log('>>> data creating:', data);
         try {
             const res = await createGenres(data);
-            naviagte('/admin/dashboard/genres');
-            showToastMessage('success', res.message);
+            toast.success(res.message);
             reset();
+            naviagte('/admin/dashboard/genres');
         } catch (error) {
-            showToastMessage('error', 'Id đã tồn tại trên hệ thống');
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
     };
 

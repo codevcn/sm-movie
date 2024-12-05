@@ -5,10 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useLocation } from 'react-router-dom';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-
 import requestApi from '~/apiService';
-// import Season from './Season';
-import { Img } from '~/apiService/instance';
 import SimilarMovie from '~/layout/component/SimilarMovie';
 import { addHistoryMovie } from '~/apiService/user';
 import { getMulti } from '~/apiService/genres';
@@ -18,7 +15,7 @@ import Skeleton from 'react-loading-skeleton';
 import Plyr from 'plyr-react';
 import 'plyr-react/plyr.css';
 import './WatchMovie.scss';
-import { getEpisodeData, getEpisodes } from '../../apiService/episode';
+import { getEpisodes } from '../../apiService/episode';
 import { EpisodeList, MovieCard, Overview } from '../Detail';
 
 function WatchMovie() {
@@ -34,8 +31,8 @@ function WatchMovie() {
     const playingFlag = useRef(0);
 
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log('>>> details:', { movieDetail, movieId, type, playingEp, user });
-    
+    console.log('>>> details:', { movieDetail, movieId, playingEp, user });
+
     const plyrOptions = {
         controls: [
             'play-large', // Nút phát ở giữa

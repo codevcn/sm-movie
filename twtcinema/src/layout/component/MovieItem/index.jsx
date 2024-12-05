@@ -8,17 +8,31 @@ import LazyLoad from 'react-lazy-load';
 
 const cs = classNames.bind(styles);
 
-function MovieItem({ type, movie, className }) {
+function MovieItem({ movie, className, category }) {
+    const movieType = movie.Type.toLowerCase();
+
+    const settingNavLink = () => {
+        if (category === 'history') {
+            return `/${movieType}/watch/${movie.Id}?ep=${movie.Episode?.EpisodeNumber || 1}`;
+        } else {
+            return `/${movieType ?? 'tv'}/${movie.Id}`;
+        }
+    };
+
     return (
-        <Link to={`/${type ?? 'tv'}/${movie.Id}`} className={cs('card', className)}>
+        <Link to={settingNavLink()} className={cs('card', className)}>
             <LazyLoad threshold={0.8}>
                 <img src={Img.posterImg(movie.PosterPath)} style={{ width: '100%' }} alt="Bìa phim" />
             </LazyLoad>
-            <div className={cs('rate')}>
-                <span>{movie.Rating || 0}</span>
-                <FontAwesomeIcon className={cs('icon')} icon={faStar} />
-            </div>
-            <p>{movie.Name}</p>
+            {category === 'history' ? (
+                <div className={cs('ep-number')}>{`Tập ${movie.Episode?.EpisodeNumber || 1}`}</div>
+            ) : (
+                <div className={cs('rate')}>
+                    <span>{movie.Rating || 0}</span>
+                    <FontAwesomeIcon className={cs('icon')} icon={faStar} />
+                </div>
+            )}
+            <p className={cs('movie-name')}>{movie.Name}</p>
         </Link>
     );
 }

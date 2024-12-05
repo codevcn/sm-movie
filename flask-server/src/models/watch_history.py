@@ -29,7 +29,6 @@ class WatchHistory(db.Model):
         return {
             "UserId": self.UserId,
             "EpisodeId": self.EpisodeId,
-            "ProgressTime": str(self.ProgressTime),  # Chuyển thời gian thành chuỗi
             "CreatedAt": (
                 self.CreatedAt.isoformat() if self.CreatedAt else None
             ),  # Định dạng ISO 8601

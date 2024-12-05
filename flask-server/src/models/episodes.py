@@ -24,7 +24,7 @@ class Episodes(db.Model):
     )
 
     def __repr__(self):
-        return f"<Episodes(MovieId={self.MovieId},EpisodeNumber={self.EpisodeNumber}),Source={self.Source},Duration={self.Duration}>"
+        return f"<Episodes(Id={self.Id},MovieId={self.MovieId},EpisodeNumber={self.EpisodeNumber}),Source={self.Source},Duration={self.Duration}>"
 
     def to_dict(self):
         return {

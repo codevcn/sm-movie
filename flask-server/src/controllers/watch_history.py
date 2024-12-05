@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from datetime import datetime, timezone
 from models.watch_history import WatchHistory
+from models.movies import Movies
 from configs.db_connect import db
 
 
@@ -54,9 +55,12 @@ def get_user_movie_histories(user_id):
         )
 
         # Trích xuất movie_id từ danh sách lịch sử
-        movies = [{"movieId": history.MovieId} for history in histories]
+        movies = []
+        for his in histories:
+            episode = his.Episode
+            movie = Movies.query.get(episode.MovieId)
+            movies.append({**movie.to_dict(), "Episode": episode.to_dict()})
 
-        return jsonify({"success": True, "data": movies}), 200
-
+        return jsonify({"success": True, "movies": movies}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

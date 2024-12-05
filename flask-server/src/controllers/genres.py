@@ -106,7 +106,7 @@ def get_genre_detail(genre_id):
                 jsonify(
                     {
                         "success": False,
-                        "message": "Không tìm thấy trang hoặc yêu cầu",
+                        "message": "Không tìm thấy thể loại",
                     }
                 ),
                 404,
@@ -127,6 +127,17 @@ def get_genre_detail(genre_id):
 def create_genre():
     try:
         data = request.get_json()
+        genre = Genres.query.filter_by(Name=data["Name"]).first()
+        if genre:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Thể loại đã tồn tại trong cơ sở dữ liệu",
+                    }
+                ),
+                400,
+            )
         new_genre = Genres(**data)
         db.session.add(new_genre)
         db.session.commit()
@@ -140,7 +151,6 @@ def create_genre():
             200,
         )
     except Exception as e:
-        print(">>> err:", e)
         return (
             jsonify(
                 {
@@ -156,10 +166,10 @@ def create_genre():
 def update_genre(genre_id):
     try:
         data = request.get_json()
-        genre = Genres.query.get(genre_id)
+        query = Genres.query.filter_by(Id=genre_id)
+        genre = query.first()
         if genre:
-            for key, value in data.items():
-                setattr(genre, key, value)
+            query.filter_by(Id=genre_id).update(data)
             db.session.commit()
             return (
                 jsonify(
@@ -175,7 +185,7 @@ def update_genre(genre_id):
                 jsonify(
                     {
                         "success": False,
-                        "message": "Không tìm thấy trang hoặc yêu cầu",
+                        "message": "Không tìm thấy thể loại",
                     }
                 ),
                 404,
@@ -197,6 +207,17 @@ def delete_genre(genre_id):
     try:
         genre = Genres.query.get(genre_id)
         if genre:
+            count_movies = len(genre.Movies)
+            if count_movies > 0:
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": "Không thể xóa thể loại đã có phim",
+                        }
+                    ),
+                    400,
+                )
             db.session.delete(genre)
             db.session.commit()
             return (
@@ -213,7 +234,7 @@ def delete_genre(genre_id):
                 jsonify(
                     {
                         "success": False,
-                        "message": "Không tìm thấy trang hoặc yêu cầu",
+                        "message": "Không tìm thấy thể loại",
                     }
                 ),
                 404,

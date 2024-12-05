@@ -21,14 +21,14 @@ def register_genre_routes(app: Flask):
         "/get-multi/<string:movie_id>", view_func=get_multi_genres, methods=["GET"]
     )
     api_blueprint.add_url_rule(
-        "/get-detail/<int:id>", view_func=get_genre_detail, methods=["GET"]
+        "/get-detail/<int:genre_id>", view_func=get_genre_detail, methods=["GET"]
     )
     api_blueprint.add_url_rule("/create", view_func=create_genre, methods=["POST"])
     api_blueprint.add_url_rule(
-        "/update/<int:id>", view_func=update_genre, methods=["PUT"]
+        "/update/<int:genre_id>", view_func=update_genre, methods=["PUT"]
     )
     api_blueprint.add_url_rule(
-        "/delete/<int:id>", view_func=delete_genre, methods=["DELETE"]
+        "/delete/<int:genre_id>", view_func=delete_genre, methods=["DELETE"]
     )
 
     # Đăng ký Blueprint
