@@ -50,8 +50,8 @@ function GenresPage() {
     };
 
     return (
-        <div className={cs('admin_container')}>
-            <h3 className="text-center mb-3 fs-1 fw-bold">Danh sách thể loại</h3>
+        <div className={cs('admin_container', 'genres')}>
+            <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Danh sách thể loại</h3>
             <Link to="/admin/dashboard/genres/create" className="btn btn-success fs-4 mb-2">
                 Thêm thể loại mới
             </Link>
@@ -72,10 +72,16 @@ function GenresPage() {
                                     <td className="text-center">{index + 1}</td>
                                     <td className="text-center">{Name}</td>
                                     <td className="text-center">
-                                        <Link to={`/admin/dashboard/genres/edit/${Id}`}>Sửa</Link>
-                                        <Button variant="danger" onClick={() => handleDeleteGenres(Id, Name)}>
-                                            Xoá
-                                        </Button>
+                                        <div className={cs('edit-movie-btn-link')}>
+                                            <Link to={`/admin/dashboard/genres/edit/${Id}`}>
+                                                <button type="button" className={cs('edit-movie-btn')}>
+                                                    Sửa
+                                                </button>
+                                            </Link>
+                                            <Button variant="danger" onClick={() => handleDeleteGenres(Id, Name)}>
+                                                Xoá
+                                            </Button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

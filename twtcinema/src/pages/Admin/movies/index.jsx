@@ -109,7 +109,7 @@ function MoviesPage() {
 
     return (
         <div className={cs('admin_container', 'movie')}>
-            <h3 className="text-center mb-3 fs-1 fw-bold">Danh sách phim</h3>
+            <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Danh sách phim</h3>
             <div className={cs('movie_utils')}>
                 <Link to="/admin/dashboard/movies/create" className="btn btn-success">
                     Thêm phim mới
@@ -154,6 +154,7 @@ function MoviesPage() {
                                 <th className="text-center">Tên phim</th>
                                 <th className="text-center">Loại phim</th>
                                 <th className="text-center">Ảnh bìa</th>
+                                <th className="text-center">Số tập</th>
                                 <th className="text-center">Lượt xem</th>
                                 <th className="text-center">Ngày phát hành</th>
                                 <th className="text-center">Bình luận</th>
@@ -176,6 +177,7 @@ function MoviesPage() {
                                                 alt=""
                                             />
                                         </td>
+                                        <td className="text-center align-middle">{movie.TotalEpisodes ?? 0}</td>
                                         <td className="text-center align-middle">{movie.Viewed ?? 0}</td>
                                         <td className="text-center align-middle">
                                             {new Date(movie.ReleaseDate).toLocaleDateString()}

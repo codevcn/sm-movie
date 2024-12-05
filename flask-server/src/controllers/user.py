@@ -7,6 +7,7 @@ from configs.db_connect import db
 import bcrypt
 from datetime import datetime, timedelta
 import cloudinary.uploader
+from datetime import datetime, timezone
 
 
 def validate_user(user_id, email, old_password):
@@ -26,10 +27,21 @@ def validate_user(user_id, email, old_password):
 def get_all():
     try:
         users = Users.query.with_entities(
-            Users.Id, Users.Email, Users.Name, Users.Avatar
+            Users.Id, Users.Email, Users.Name, Users.Avatar, Users.IsAdmin
         ).all()
+        users_list = []
+        for user in users:
+            users_list.append(
+                {
+                    "Id": user.Id,
+                    "Email": user.Email,
+                    "Avatar": user.Avatar,
+                    "Name": user.Name,
+                    "IsAdmin": user.IsAdmin,
+                }
+            )
         return (
-            jsonify({"success": True, "data": [user.to_dict() for user in users]}),
+            jsonify({"success": True, "data": users_list}),
             200,
         )
     except Exception as e:
@@ -84,11 +96,10 @@ def update_user(email):
 def edit_user(user_email):
     try:
         data = request.get_json()
-        user = Users.query.filter_by(Email=user_email).first()
+        query = Users.query.filter_by(Email=user_email)
+        user = query.first()
         if user:
-            user.Name = data["name"]
-            user.Avatar = data["avatar"]
-            user.IsAdmin = data["isAdmin"]
+            query.update(data)
             db.session.commit()
             return (
                 jsonify({"success": True, "message": "Sửa người dùng thành công"}),
@@ -176,12 +187,17 @@ def count_each_month():
         users_count = []
         for i in range(1, 13):
             first_date_of_month = datetime(date.year, i, 1)
-            last_date_of_month = datetime(date.year, i + 1, 1) - timedelta(days=1)
+            if i == 12:
+                last_date_of_month = datetime(
+                    date.year, 12, 31
+                )  # Ngày cuối cùng của tháng 12
+            else:
+                last_date_of_month = datetime(date.year, i + 1, 1) - timedelta(days=1)
             user_count = Users.query.filter(
                 Users.CreatedAt >= first_date_of_month,
                 Users.CreatedAt <= last_date_of_month,
             ).count()
-            users_count.append({"Tháng": f"Tháng {i}", "Số_Lượng": user_count})
+            users_count.append({"month": f"Tháng {i}", "count": user_count})
         return jsonify({"success": True, "total": users_count}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

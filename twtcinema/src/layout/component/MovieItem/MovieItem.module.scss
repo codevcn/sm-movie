@@ -8,13 +8,13 @@
     .movie-name {
         display: block;
         text-align: center;
-        height: 40px;
         font-size: 1.9rem;
         padding: 5px 5px;
         color: white;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        margin-bottom: 5px;
 
         &:hover {
             color: var(--primary);

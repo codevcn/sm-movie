@@ -22,4 +22,17 @@
         padding: 8px;
         border-radius: 7px;
     }
+
+    .edit-movie-btn-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .edit-movie-btn {
+            background-color: black;
+            border-radius: 5px;
+            color: white;
+            padding: 0 10px;
+        }
+    }
 }

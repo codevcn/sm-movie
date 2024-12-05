@@ -35,5 +35,5 @@ class Users(db.Model):
             "Avatar": self.Avatar,
             "IsAdmin": self.IsAdmin,
             "IsActive": self.IsActive,
-            "CreatedAt": self.CreatedAt,
+            "CreatedAt": self.CreatedAt.isoformat() if self.CreatedAt else None,
         }

@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { NavLink, useNavigate } from 'react-router-dom';
-
 import styles from './Sidebar.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,8 +24,8 @@ function Sidebar({ className }, ref) {
             const genres = await getAll();
             setGenres(genres.data);
             if (user) {
-                const userRole = await getDetail(user.email);
-                setRole(userRole?.data?.isAdmin);
+                const res = await getDetail(user.email);
+                setRole(res?.data?.IsAdmin);
             }
         };
         genAllGenres();
@@ -62,13 +61,13 @@ function Sidebar({ className }, ref) {
                             <FontAwesomeIcon className={cs('iconDown')} icon={faChevronRight} />
                         </div>
                         <div className={cs('subContent')}>
-                            {genres.map((genre, index) => (
+                            {genres.map(({ Name, Id }, index) => (
                                 <NavLink
                                     key={index}
-                                    to={`/genres/${genre.name}/${genre.id}`}
+                                    to={`/genres/${Name}/${Id}`}
                                     className={(nav) => cs('subContent-item', { active: nav.isActive })}
                                 >
-                                    {genre.name}
+                                    {Name}
                                 </NavLink>
                             ))}
                         </div>

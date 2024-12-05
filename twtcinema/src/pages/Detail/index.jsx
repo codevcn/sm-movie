@@ -179,6 +179,8 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
                         )}
                     </button>
                 </div>
+
+                {}
             </div>
         </div>
     );
@@ -273,8 +275,8 @@ function InforDetail() {
     return (
         movieDetail && (
             <div className="movie-details">
-                <MovieCard movieDetail={movieDetail} genres={genres} watchNowBtn />
-                {episodes && (
+                <MovieCard movieDetail={movieDetail} genres={genres} watchNowBtn={episodes && episodes.length > 0} />
+                {episodes && episodes.length > 0 && (
                     <EpisodeList episodes={episodes} type={movieDetail.Type.toLowerCase()} movieDetail={movieDetail} />
                 )}
                 <Overview overview={movieDetail.Overview} />

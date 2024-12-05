@@ -47,7 +47,7 @@ def register_movie_routes(app: Flask):
         "/similar-movies/<string:slug>", view_func=get_similar_movies, methods=["GET"]
     )
     api_blueprint.add_url_rule(
-        "/get-by-genres/<int:id>", view_func=get_genres_by_id, methods=["GET"]
+        "/get-by-genres/<int:genre_id>", view_func=get_genres_by_id, methods=["GET"]
     )
     api_blueprint.add_url_rule(
         "/<string:category>/<string:type>",

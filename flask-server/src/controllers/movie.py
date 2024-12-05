@@ -258,11 +258,14 @@ def get_movies_by_category(category, type):
 
 def get_genres_by_id(genre_id):
     try:
+        movieGenres = MovieGenres.query.filter_by(GenreId=genre_id).all()
         movies = (
             Movies.query.filter(
-                or_(Movies.Genres.any(genre_id), Movies.Genres.any(str(genre_id)))
+                Movies.Id.in_(
+                    [movieGenre.to_dict()["MovieId"] for movieGenre in movieGenres]
+                )
             )
-            .order_by(Movies.IbmPoints.desc())
+            .order_by(Movies.CreatedAt.desc())
             .all()
         )
         return (
@@ -301,8 +304,17 @@ def get_similar_movies(slug):
 def get_movies_by_month():
     try:
         now = datetime.now()
-        first_date_of_month = datetime(now.year, now.month, 1)
-        last_date_of_month = datetime(now.year, now.month + 1, 1) - timedelta(days=1)
+        curr_month = now.month
+        first_date_of_month = datetime(now.year, curr_month, 1)
+        last_date_of_month = None
+        if curr_month == 12:
+            last_date_of_month = datetime(
+                now.year, 12, 31
+            )  # Ngày cuối cùng của tháng 12
+        else:
+            last_date_of_month = datetime(now.year, curr_month + 1, 1) - timedelta(
+                days=1
+            )
 
         movies = Movies.query.filter(
             Movies.CreatedAt.between(first_date_of_month, last_date_of_month)
@@ -319,8 +331,17 @@ def get_movies_by_month():
 def count_movies_by_month():
     try:
         now = datetime.now()
-        first_date_of_month = datetime(now.year, now.month, 1)
-        last_date_of_month = datetime(now.year, now.month + 1, 1) - timedelta(days=1)
+        curr_month = now.month
+        first_date_of_month = datetime(now.year, curr_month, 1)
+        last_date_of_month = None
+        if curr_month == 12:
+            last_date_of_month = datetime(
+                now.year, 12, 31
+            )  # Ngày cuối cùng của tháng 12
+        else:
+            last_date_of_month = datetime(now.year, curr_month + 1, 1) - timedelta(
+                days=1
+            )
 
         count = Movies.query.filter(
             Movies.CreatedAt.between(first_date_of_month, last_date_of_month)

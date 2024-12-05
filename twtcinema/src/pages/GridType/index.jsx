@@ -45,8 +45,8 @@ function GridType() {
                     result = searchData;
                     break;
                 default:
-                    const res = await requestApi.getGenresMovie(id);
-                    result = res;
+                    const movies = await requestApi.getGenresMovie(id);
+                    result = movies;
             }
             setMovies(result.data);
             setLoading(false);
@@ -68,7 +68,7 @@ function GridType() {
                         ? 'Danh sách yêu thích'
                         : type === 'history'
                         ? 'Xem gần đây'
-                        : name}
+                        : `Các phim cho thể loại "${name}"`}
                 </h4>
             ) : (
                 <h4 className={cs('title')}>{`Kết quả của '${type}'`}</h4>

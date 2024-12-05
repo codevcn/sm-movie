@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
 
 import styles from './Search.module.scss';
-import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import useDebounce from '~/hooks/useDebounce';
 import Tippy from '@tippyjs/react/headless';
 
@@ -13,6 +14,7 @@ import SearchItem from './SearchItem';
 import { Link, useNavigate } from 'react-router-dom';
 
 const cs = classNames.bind(styles);
+
 function SearchBox() {
     const [inputValue, setInputValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
@@ -20,47 +22,44 @@ function SearchBox() {
     const [loading, setLoading] = useState(false);
     const inputRef = useRef();
     const navigate = useNavigate();
+    console.log('>>> input value:', inputValue);
 
     const debouncedValue = useDebounce(inputValue, 500);
+    console.log('>>> search stuff:', { debouncedValue, searchResult });
 
-    useLayoutEffect(() => {
-        if (!debouncedValue.trim()) {
-            //reset lai mang sau khi xoa
-            setSearchResult([]);
-            return;
+    const searching = async () => {
+        setLoading(true);
+        try {
+            const result = await requestApi.getSearch({ params: { keyword: debouncedValue } });
+            setSearchResult(result.data);
+        } catch (error) {
+            console.error('>>> error:', error);
         }
+        setLoading(false);
+    };
 
-        const loadlistresult = async () => {
-            setLoading(true);
-
-            try {
-                const result = await requestApi.getSearch({ params: { keyword: debouncedValue } });
-                setSearchResult(result.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('>>> error:', error);
-            }
-        };
-
-        loadlistresult();
-    }, [debouncedValue]);
+    const enterKey = (e) => {
+        e.preventDefault();
+        setShowResult(true);
+        if (e.key === 'Enter') {
+            navigate(debouncedValue !== '' ? `/search/mores/${debouncedValue}` : '');
+            setShowResult(false);
+            setInputValue('');
+        }
+    };
 
     useEffect(() => {
+        if (debouncedValue.trim()) {
+            searching();
+        } else {
+            //reset lai mang sau khi xoa
+            setSearchResult([]);
+        }
         const ref = inputRef.current;
-        const enterKey = (e) => {
-            e.preventDefault();
-            setShowResult(true);
-            if (e.keyCode === 13) {
-                navigate(debouncedValue !== '' ? `/search/mores/${debouncedValue}` : '');
-                setShowResult(false);
-                setInputValue('');
-            }
-        };
         ref.addEventListener('keyup', enterKey);
         return () => {
             ref.removeEventListener('keyup', enterKey);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedValue]);
 
     const handleClear = () => {
@@ -84,7 +83,7 @@ function SearchBox() {
                 render={(attrs) => (
                     <div className={cs('search-result')} tabIndex="-1" {...attrs}>
                         <PopperWrapper>
-                            {searchResult.length > 0 ? (
+                            {searchResult && searchResult.length > 0 ? (
                                 <>
                                     <h4 className={cs('search-title')}>{`Kết quả cho '${debouncedValue}'`}</h4>
                                     <Link
@@ -101,12 +100,11 @@ function SearchBox() {
                                     <div className={cs('result-scroll')}>
                                         {searchResult.map((result) => (
                                             <SearchItem
-                                                // onClick={() => setShowResult(false)}
                                                 onClick={() => {
                                                     setShowResult(false);
                                                     setInputValue('');
                                                 }}
-                                                key={result.id}
+                                                key={result.Id}
                                                 data={result}
                                             />
                                         ))}

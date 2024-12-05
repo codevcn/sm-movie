@@ -1,39 +1,48 @@
 import { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import styles from './Dashboard.module.scss';
 import classNames from 'classnames/bind';
-
+import { toast } from 'react-toastify';
 import { getAllCount } from '~/apiService/user';
 import { getCountMovieMonth, getTotalView } from '~/apiService/movie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClapperboard, faComment, faPlayCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { getCountCommentMonth } from '~/apiService/comment';
 import { Link } from 'react-router-dom';
+import instance from '../../../apiService/instance';
 
 const cs = classNames.bind(styles);
 
 function StatisticDashboard() {
     const [totalUser, setTotalUser] = useState([]);
     const [totalView, setTotalView] = useState(0);
-
     const [countMovie, setCountMovie] = useState(0);
     const [countComment, setCountComment] = useState(0);
     const [loading, setLoading] = useState(true);
+    console.log('>>> stuff:', { totalUser, totalView, countMovie, countComment });
 
     useEffect(() => {
         const getCount = async () => {
-            const userByMonth = await getAllCount();
-            const movieByMonth = await getCountMovieMonth();
-            const commentByMonth = await getCountCommentMonth();
-            const totalView = await getTotalView();
-            setTotalUser(userByMonth.total);
-            setCountMovie(movieByMonth.data);
-            setCountComment(commentByMonth.data);
-            setTotalView(totalView.count);
+            setLoading(true);
+            try {
+                await instance.get('/user/upkkk');
+                const userByMonth = await getAllCount();
+                const movieByMonth = await getCountMovieMonth();
+                const commentByMonth = await getCountCommentMonth();
+                const totalView = await getTotalView();
+                setTotalUser(userByMonth.total);
+                setCountMovie(movieByMonth.data);
+                setCountComment(commentByMonth.data);
+                setTotalView(totalView.count);
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra';
+                toast.error(errorMessage);
+            }
             setLoading(false);
         };
         getCount();
     }, []);
+
     return (
         <div className={cs('wrapper')}>
             <div className={cs('box-contain')}>
@@ -81,10 +90,12 @@ function StatisticDashboard() {
                 {/* <div className={cs('box-item')}></div> */}
             </div>
             <LineChart width={1200} height={400} data={totalUser} style={{ margin: '0 auto', fontSize: '1.5rem' }}>
-                <Line type="monotone" dataKey="Số_Lượng" stroke="#8884d8" />
-                <XAxis dataKey="Tháng" />
+                <Line type="monotone" dataKey="count" stroke="#8884d8" />
+                <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
+                <CartesianGrid stroke="#f5f5f5" />
+                <Legend />
             </LineChart>
             <h4>Số Lượng Người Dùng Đăng Kí Trên Hệ Thống</h4>
         </div>

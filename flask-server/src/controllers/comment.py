@@ -79,11 +79,18 @@ def delete_comment(comment_id):
 # Tổng số bình luận trong tháng hiện tại
 def total_comment_by_month():
     try:
-        date = datetime.now()
-        first_date_of_current_month = datetime(date.year, date.month, 1)
-        last_date_of_current_month = datetime(date.year, date.month + 1, 1) - timedelta(
-            days=1
-        )
+        now = datetime.now()
+        curr_month = now.month
+        first_date_of_current_month = datetime(now.year, curr_month, 1)
+        last_date_of_current_month = None
+        if curr_month == 12:
+            last_date_of_current_month = datetime(
+                now.year, 12, 31
+            )  # Ngày cuối cùng của tháng 12
+        else:
+            last_date_of_current_month = datetime(
+                now.year, curr_month + 1, 1
+            ) - timedelta(days=1)
 
         count = Comments.query.filter(
             Comments.CreatedAt >= first_date_of_current_month,
