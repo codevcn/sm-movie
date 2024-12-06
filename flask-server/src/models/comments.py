@@ -13,7 +13,7 @@ class Comments(db.Model):
         Integer, ForeignKey("Users.Id"), nullable=False
     )  # Trường `UserId`, không được để trống
     MovieId = Column(
-        Integer, ForeignKey("Movies.Id"), nullable=False, primary_key=True
+        Integer, ForeignKey("Movies.Id"), nullable=False
     )  # Trường `MovieId`, không được để trống
     Content = Column(
         String(255), nullable=False
