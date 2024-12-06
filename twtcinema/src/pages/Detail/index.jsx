@@ -19,7 +19,7 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
     const [userFavoriteMovies, setUserFavoriteMovies] = useState();
     const [ratingData, setRatingData] = useState(0);
 
-    const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id } = movieDetail;
+    const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id , rating} = movieDetail;
     const greaterThan0 = ratingData > 0;
 
     const user = JSON.parse(localStorage.getItem('user'));
@@ -136,6 +136,10 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
                 <p>
                     <strong>Lượt xem: </strong>
                     <span>{Viewed || 0}</span>
+                </p>
+                <p>
+                    <strong>Đánh giá: </strong>
+                    <span>{rating || 0}</span>
                 </p>
 
                 <div className="rating">

@@ -1,0 +1,19 @@
+____MOVIE_____
+Name (có)
+PosterPath (có)
+TotalEpisodes (có)
+
+Overview (có)
+
+
+____________
+ReleaseDate (có)
+CountryId (có)
+Language (có) (ok)
+Thời lượng (có) (ok)
+
+
+____EPI_____
+EpisodeNumber
+Source
+Duration

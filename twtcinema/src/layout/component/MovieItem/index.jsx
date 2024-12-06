@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './MovieItem.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar,faEye  } from '@fortawesome/free-solid-svg-icons';
 import LazyLoad from 'react-lazy-load';
 
 const cs = classNames.bind(styles);
@@ -26,11 +26,15 @@ function MovieItem({ movie, className, category }) {
             </LazyLoad>
             {category === 'history' ? (
                 <div className={cs('ep-number')}>{`Tập ${movie.Episode?.EpisodeNumber || 1}`}</div>
-            ) : (
-                <div className={cs('rate')}>
+            ) : (<>
+                {(movie.Rating || movie.AverageRating) && <div className={cs('rate')}>
                     <span>{movie.Rating || movie.AverageRating || 0}</span>
-                    <FontAwesomeIcon className={cs('icon')} icon={faStar} />
-                </div>
+                    <FontAwesomeIcon className={cs('icon-star')} icon={faStar} />
+                </div>}
+                {movie.Viewed && <div className={cs('view')}>
+                    <span>{movie.Viewed || 0}</span>
+                    <FontAwesomeIcon className={cs('icon-view')} icon={faEye } />
+                </div>}</>
             )}
             <p className={cs('movie-name')}>{movie.Name}</p>
         </Link>

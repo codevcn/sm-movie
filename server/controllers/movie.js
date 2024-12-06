@@ -199,7 +199,6 @@ class MovieController {
       const limit = 20;
       const currPage = req.query.page ? req.query.page : 1;
       const { category, type } = req.params;
-
       if (category) {
         if (type === "top_rated") {
           const movies = await Movie.find({

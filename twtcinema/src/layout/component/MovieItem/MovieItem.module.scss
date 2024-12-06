@@ -17,7 +17,7 @@
         margin-bottom: 5px;
 
         &:hover {
-            color: var(--primary);
+            color: var(--primary); 
         }
     }
     .ep-number {
@@ -46,8 +46,26 @@
         color: white;
         background-color: var(--primary);
     }
-    .icon {
+    .view {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 1.6rem;
+        padding: 0 6px;
+        line-height: 1.3;
+        border-radius: 50px;
+        color: black;
+        background-color: #FFFFCC;
+    }
+    .icon-star {
         margin-top: -3px;
+        margin-left: 2px;
+        font-size: 1.2rem;
+    }
+    .icon-view {
+        margin-top: 3px;
         margin-left: 2px;
         font-size: 1.2rem;
     }

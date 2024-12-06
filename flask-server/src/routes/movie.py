@@ -13,6 +13,9 @@ from controllers.movie import (
     get_movies_by_category,
     get_newest_movies,
 )
+from services.train_model import(
+    train_knn_model, get_similar_movies
+)
 from flask import Blueprint, Flask
 
 
@@ -62,6 +65,16 @@ def register_movie_routes(app: Flask):
         view_func=get_newest_movies,
         methods=["GET"],
     )  # lấy ra count phim mới nhất
-
+    api_blueprint.add_url_rule(
+        "/nat",
+        view_func=train_knn_model,
+        methods=["GET"],
+    )
+    api_blueprint.add_url_rule(
+        "/nat2/<int:movie_id>",
+        view_func=get_similar_movies,
+        methods=["GET"],
+    )
+    
     # Đăng ký Blueprint
     app.register_blueprint(api_blueprint)

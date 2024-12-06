@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Date, DateTime, Float, Enum, ForeignKey
+from sqlalchemy import Column, String, Integer, Date, DateTime, Float, Enum, ForeignKey, func
 from configs.db_connect import db
 from sqlalchemy.orm import relationship
 
@@ -20,7 +20,7 @@ class Movies(db.Model):
     Language = Column(String(255), nullable=True)  # Ngôn ngữ (có thể rỗng)
     Overview = Column(String(255), nullable=True)  # Tóm tắt (có thể rỗng)
     Viewed = Column(Integer, nullable=False, default=0)  # Số lượt xem (có thể rỗng)
-    CreatedAt = Column(DateTime, nullable=True)  # Ngày tạo (có thể rỗng)
+    CreatedAt = Column(DateTime,server_default=func.now(), nullable=True)  # Ngày tạo (có thể rỗng)
 
     Country = relationship("Countries", back_populates="Movies", lazy="select")
     Genres = relationship("MovieGenres", back_populates="Movie", lazy="select")

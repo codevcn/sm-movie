@@ -24,6 +24,7 @@ const Login = () => {
         if (!email || !password) {
             showToastMessage('error', 'Vui lòng nhập đủ thông tin');
         } else {
+            try{
             const res = await login({
                 email,
                 password,
@@ -34,8 +35,8 @@ const Login = () => {
                 showToastMessage('success', res.message);
                 setEmail('');
                 setPassword('');
-            } else {
-                showToastMessage('error', res.message);
+            } } catch(e){
+                showToastMessage('error', e.response.data.message);
             }
         }
     };

@@ -73,7 +73,7 @@ function Sidebar({ className }, ref) {
                         </div>
                     </div>
                 </div>
-
+                {user &&                  
                 <div className={cs('personal')}>
                     <h2 className={cs('title')}>CÁ NHÂN</h2>
                     <NavLink
@@ -93,6 +93,7 @@ function Sidebar({ className }, ref) {
                         <span>Xem gần đây</span>
                     </NavLink>
                 </div>
+                }
                 {user && role && (
                     <div className={cs('dashboard')}>
                         <button className={cs('btn-dashboard')} onClick={() => navigate('/admin/dashboard/statistic')}>
