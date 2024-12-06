@@ -1,1 +1,2 @@
 flask-server/.env
+**/__pycache__/
