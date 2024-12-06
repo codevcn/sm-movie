@@ -1,12 +1,13 @@
 from flask import request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import or_
+from sqlalchemy import func, desc
 from configs.db_connect import db
 from models.movies import Movies
 from models.comments import Comments
 from models.favorite_list import FavoriteList
 from models.watch_history import WatchHistory
 from models.episodes import Episodes
+from models.rating import Rating
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 from models.movie_genres import MovieGenres
@@ -225,28 +226,70 @@ def get_movies_by_category(category, type):
     try:
         limit = 20
         curr_page = int(request.args.get("page", 1))
-        query = Movies.query.filter(Movies.Type == category)
+        query = db.session.query(Movies).filter(Movies.Type == category)
 
         if type == "top_rated":
-            query = query.filter(Movies.IbmPoints >= 6.5).order_by(
-                Movies.IbmPoints.desc()
+            # Tính giá trị trung bình `Rating` và liên kết bảng
+            query = (
+                db.session.query(
+                    Movies.Id,
+                    Movies.Name,
+                    Movies.PosterPath,
+                    Movies.ReleaseDate,
+                    Movies.Viewed,
+                    Movies.Type,
+                    func.avg(Rating.Rating).label(
+                        "AverageRating"
+                    ),  # Giá trị trung bình Rating
+                )
+                .join(
+                    Rating, Movies.Id == Rating.MovieId
+                )  # Liên kết bảng `Movies` và `Rating`
+                .group_by(
+                    Movies.Id, Movies.Name, Movies.PosterPath
+                )  # Nhóm theo `Movies`
+                .order_by(
+                    desc("AverageRating")
+                )  # Sắp xếp giảm dần theo giá trị trung bình Rating
             )
         elif type == "popular":
-            query = query.filter(Movies.Viewed >= 10).order_by(Movies.Viewed.desc())
+            query = (
+                db.session.query(Movies)
+                .filter(Movies.Viewed >= 10)
+                .order_by(Movies.Viewed.desc())
+            )
         elif type == "upcoming":
-            date = datetime.now() - timedelta(days=60)
-            query = query.filter(Movies.ReleaseDate >= date).order_by(
-                Movies.ReleaseDate.desc()
+            date = datetime.now() + timedelta(days=1)
+            query = (
+                db.session.query(Movies)
+                .filter(Movies.ReleaseDate >= date)
+                .order_by(Movies.ReleaseDate.desc())
             )
 
         count_documents = query.count()
-        movies = query.offset((curr_page - 1) * limit).limit(limit).all()
+        movies_data = query.offset((curr_page - 1) * limit).limit(limit).all()
+
+        movies = []
+        for movie in movies_data:
+            movies.append(
+                {
+                    "Id": movie.Id,
+                    "Name": movie.Name,
+                    "PosterPath": movie.PosterPath,
+                    "ReleaseDate": movie.ReleaseDate,
+                    "Viewed": movie.Viewed,
+                    "Type": movie.Type,
+                    "AverageRating": (
+                        movie.AverageRating if type == "top_rated" else None
+                    ),
+                }
+            )
 
         return (
             jsonify(
                 {
                     "success": True,
-                    "data": [movie.to_dict() for movie in movies],
+                    "data": movies,
                     "pages": (count_documents + limit - 1) // limit,
                 }
             ),
@@ -276,29 +319,29 @@ def get_genres_by_id(genre_id):
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-def get_similar_movies(slug):
-    try:
-        movie = Movies.query.filter_by(Slug=slug).first()
-        if not movie:
-            return jsonify({"success": False, "message": "Không tìm thấy phim"}), 404
+# def get_similar_movies(slug):
+#     try:
+#         movie = Movies.query.filter_by(Slug=slug).first()
+#         if not movie:
+#             return jsonify({"success": False, "message": "Không tìm thấy phim"}), 404
 
-        similar_movies = Movies.query.filter(
-            Movies.Type == movie.Type,
-            Movies.Genres.overlap(movie.Genres),
-            Movies.Slug != slug,
-        ).all()
+#         similar_movies = Movies.query.filter(
+#             Movies.Type == movie.Type,
+#             Movies.Genres.overlap(movie.Genres),
+#             Movies.Slug != slug,
+#         ).all()
 
-        return (
-            jsonify(
-                {
-                    "success": True,
-                    "data": [similar.to_dict() for similar in similar_movies],
-                }
-            ),
-            200,
-        )
-    except SQLAlchemyError as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+#         return (
+#             jsonify(
+#                 {
+#                     "success": True,
+#                     "data": [similar.to_dict() for similar in similar_movies],
+#                 }
+#             ),
+#             200,
+#         )
+#     except SQLAlchemyError as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
 
 
 def get_movies_by_month():
@@ -349,4 +392,27 @@ def count_movies_by_month():
 
         return jsonify({"success": True, "data": count}), 200
     except SQLAlchemyError as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+def get_newest_movies(count):
+    if not count:
+        return (
+            jsonify(
+                {"success": False, "message": "Thiếu thông tin cần thiết để truy vấn"}
+            ),
+            400,
+        )
+    try:
+        movies = (
+            db.session.query(Movies)
+            .order_by(Movies.CreatedAt.desc())
+            .limit(count)
+            .all()
+        )
+        return (
+            jsonify({"success": True, "movies": [movie.to_dict() for movie in movies]}),
+            200,
+        )
+    except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

@@ -22,10 +22,8 @@ function SearchBox() {
     const [loading, setLoading] = useState(false);
     const inputRef = useRef();
     const navigate = useNavigate();
-    console.log('>>> input value:', inputValue);
 
     const debouncedValue = useDebounce(inputValue, 500);
-    console.log('>>> search stuff:', { debouncedValue, searchResult });
 
     const searching = async () => {
         setLoading(true);

@@ -3,29 +3,39 @@ import styles from './ListMovie.module.scss';
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
+import { toast } from 'react-toastify';
 import requestApi from '~/apiService';
 import MovieItem from '../MovieItem';
 import Skeleton from 'react-loading-skeleton';
+
 const cs = classNames.bind(styles);
 
 function ListMovie({ category, type }) {
-    const [lists, setLists] = useState([]);
+    const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        async function getList() {
+
+    async function getList() {
+        try {
             if (category === 'movie') {
                 const result = await requestApi.getTypeMovie(type, { params: {} });
-                setLists(result.data.slice(0, 10));
+                setMovies(result.data.slice(0, 10));
                 setLoading(false);
             } else {
                 const result = await requestApi.getTypeTV(type, { params: {} });
-                setLists(result.data.slice(0, 10));
+                setMovies(result.data.slice(0, 10));
                 setLoading(false);
             }
+        } catch (error) {
+            console.error('>>> error:', error);
+            const msg = error.reponse?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
+    }
+
+    useEffect(() => {
         getList();
     }, [category]);
+
     return (
         <div className={cs('wrapper')}>
             <Swiper grabCursor spaceBetween={10} slidesPerView={'auto'} className={cs('swapper')}>
@@ -37,9 +47,9 @@ function ListMovie({ category, type }) {
                                   <Skeleton className={cs('skeleton-movie-item')} />
                               </SwiperSlide>
                           ))
-                    : lists.map((list, index) => (
+                    : movies.map((list, index) => (
                           <SwiperSlide key={index} className={cs('swiperitem')}>
-                              <MovieItem className={cs('movieItem')} category={category} list={list} />
+                              <MovieItem className={cs('movieItem')} category={category} movie={list} />
                           </SwiperSlide>
                       ))}
             </Swiper>

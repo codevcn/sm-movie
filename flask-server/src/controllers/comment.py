@@ -105,40 +105,32 @@ def total_comment_by_month():
 # Danh sách bình luận trong tháng hiện tại
 def comment_by_month():
     try:
-        date = datetime.now()
-        first_date_of_current_month = datetime(date.year, date.month, 1)
-        last_date_of_current_month = datetime(date.year, date.month + 1, 1) - timedelta(
-            days=1
-        )
+        now = datetime.now()
+        curr_month = now.month
+        first_date_of_current_month = datetime(now.year, curr_month, 1)
+        last_date_of_current_month = None
+        if curr_month == 12:
+            last_date_of_current_month = datetime(
+                now.year, 12, 31
+            )  # Ngày cuối cùng của tháng 12
+        else:
+            last_date_of_current_month = datetime(
+                now.year, curr_month + 1, 1
+            ) - timedelta(days=1)
 
-        comments = (
-            Comments.query.filter(
-                Comments.CreatedAt >= first_date_of_current_month,
-                Comments.CreatedAt <= last_date_of_current_month,
-            )
-            .join(Users, Users.Id == Comments.UserId)
-            .add_columns(
-                Users.Name,
-                Users.Email,
-                Users.Avatar,
-                Comments.Content,
-                Comments.CreatedAt,
-            )
-            .order_by(Comments.CreatedAt.desc())
-            .all()
+        movies_data = Comments.query.filter(
+            Comments.CreatedAt >= first_date_of_current_month,
+            Comments.CreatedAt <= last_date_of_current_month,
+        ).all()
+
+        movies = []
+        for movie in movies_data:
+            user = movie.User
+            movies.append({**movie.to_dict(), "User": user.to_dict()})
+
+        return (
+            jsonify({"success": True, "data": movies}),
+            200,
         )
-        result = [
-            {
-                "user": {
-                    "name": user_name,
-                    "email": user_email,
-                    "avatar": user_avatar,
-                },
-                "content": content,
-                "created_at": created_at,
-            }
-            for _, user_name, user_email, user_avatar, content, created_at in comments
-        ]
-        return jsonify({"success": True, "data": result}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500

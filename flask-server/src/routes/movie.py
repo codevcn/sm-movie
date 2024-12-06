@@ -8,9 +8,10 @@ from controllers.movie import (
     update,
     update_viewed,
     delete,
-    get_similar_movies,
+    # get_similar_movies,
     get_genres_by_id,
     get_movies_by_category,
+    get_newest_movies,
 )
 from flask import Blueprint, Flask
 
@@ -43,9 +44,9 @@ def register_movie_routes(app: Flask):
     api_blueprint.add_url_rule(
         "/delete/<int:movie_id>", view_func=delete, methods=["DELETE"]
     )
-    api_blueprint.add_url_rule(
-        "/similar-movies/<string:slug>", view_func=get_similar_movies, methods=["GET"]
-    )
+    # api_blueprint.add_url_rule(
+    #     "/similar-movies/<string:slug>", view_func=get_similar_movies, methods=["GET"]
+    # )
     api_blueprint.add_url_rule(
         "/get-by-genres/<int:genre_id>", view_func=get_genres_by_id, methods=["GET"]
     )
@@ -54,6 +55,13 @@ def register_movie_routes(app: Flask):
         view_func=get_movies_by_category,
         methods=["GET"],
     )
+
+    # new routes
+    api_blueprint.add_url_rule(
+        "/newest/<int:count>",
+        view_func=get_newest_movies,
+        methods=["GET"],
+    )  # lấy ra count phim mới nhất
 
     # Đăng ký Blueprint
     app.register_blueprint(api_blueprint)

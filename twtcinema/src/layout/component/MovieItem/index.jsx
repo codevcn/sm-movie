@@ -28,7 +28,7 @@ function MovieItem({ movie, className, category }) {
                 <div className={cs('ep-number')}>{`Tập ${movie.Episode?.EpisodeNumber || 1}`}</div>
             ) : (
                 <div className={cs('rate')}>
-                    <span>{movie.Rating || 0}</span>
+                    <span>{movie.Rating || movie.AverageRating || 0}</span>
                     <FontAwesomeIcon className={cs('icon')} icon={faStar} />
                 </div>
             )}

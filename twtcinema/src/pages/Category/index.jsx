@@ -30,9 +30,9 @@ function Category() {
                             <div className={cs('header')}>
                                 <h4 className={cs('title')}>
                                     {type === 'upcoming'
-                                        ? 'Phim Mới'
+                                        ? 'Phim Sắp Chiếu'
                                         : type === 'top_rated'
-                                        ? 'Đánh Giá Cao'
+                                        ? 'Được Đánh Giá Cao'
                                         : 'Phổ Biến'}
                                 </h4>
                                 <Link className={cs('seemore')} to={`/${type ?? 'tv'}/mores/${type}`}>

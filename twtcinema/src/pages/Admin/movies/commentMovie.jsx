@@ -1,10 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import styles from './Movies.module.scss';
 import classNames from 'classnames/bind';
-
 import { deleteComment, getCommentByMovie, getCommentMonth } from '~/apiService/comment';
+import { toast } from 'react-toastify';
+import { Spinner } from 'react-bootstrap';
 
 const cs = classNames.bind(styles);
 
@@ -14,67 +16,70 @@ function CommentMovie() {
     const [loading, setLoading] = useState(false);
 
     const getCommentByid = async () => {
+        setLoading(true);
         try {
-            if (id == 'month') {
+            if (id === 'month') {
                 const allComment = await getCommentMonth();
+                console.log('>>> all comm:', allComment);
                 setComments(allComment.data);
             } else {
                 const allComment = await getCommentByMovie(id);
                 setComments(allComment.data);
             }
-            setLoading(true);
         } catch (error) {
-            console.error(error);
+            console.error('>>> error:', error);
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
+        setLoading(false);
     };
     useEffect(() => {
         getCommentByid();
     }, [id]);
 
-    const handleDeleteComment = async (id) => {
-        try {
-            await deleteComment(id);
-            getCommentByid();
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // const handleDeleteComment = async (id) => {
+    //     try {
+    //         await deleteComment(id);
+    //         getCommentByid();
+    //         toast.success('Xóa bình luận thành công');
+    //     } catch (error) {
+    //         console.error('>>> error:', error);
+    //         const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+    //         toast.error(msg);
+    //     }
+    // };
+
     return (
         <div className={cs('admin_container', 'movie')}>
             <>
-                {!loading && <div>Loading...</div>}
+                {loading && (
+                    <div className="mt-5">
+                        <Spinner animation="border" role="status"></Spinner>
+                    </div>
+                )}
 
-                {comments.length > 0 ? (
+                {comments && comments.length > 0 ? (
                     <>
-                        <h3 className="text-center mb-3 fs-1 fw-bold">Danh sách bình luận</h3>
+                        <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Danh sách bình luận</h3>
                         <Table striped bordered hover className="mt-2">
                             <thead>
                                 <tr>
-                                    <th className="text-center ">STT</th>
-                                    <th className="text-center">Tên</th>
-                                    <th className="text-center">Email</th>
-                                    <th className="text-center">Nội dung</th>
-                                    <th className="text-center">Thời gian tạo</th>
-                                    <th className="text-center">Chức năng</th>
+                                    <th className="text-center align-middle">STT</th>
+                                    <th className="text-center align-middle">Tên người dùng</th>
+                                    <th className="text-center align-middle">Email</th>
+                                    <th className="text-center align-middle">Nội dung</th>
+                                    <th className="text-center align-middle">Thời gian tạo</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {comments &&
                                     comments.map((comment, index) => (
                                         <tr key={index}>
-                                            <td className="text-center">{index + 1}</td>
-                                            <td className="text-center">{comment?.userId?.name}</td>
-                                            <td className="text-center">{comment?.userId?.email}</td>
-                                            <td className="text-center">{comment?.content}</td>
-                                            <td className="text-center">{comment?.createdAt}</td>
-                                            <td className="text-center">
-                                                <Button
-                                                    variant="danger"
-                                                    onClick={() => handleDeleteComment(comment._id)}
-                                                >
-                                                    Xoá
-                                                </Button>
-                                            </td>
+                                            <td className="text-center align-middle">{index + 1}</td>
+                                            <td className="text-center align-middle">{comment.User.Name}</td>
+                                            <td className="text-center align-middle">{comment.User.Email}</td>
+                                            <td className="text-center align-middle">{comment.Content}</td>
+                                            <td className="text-center align-middle">{comment.CreatedAt}</td>
                                         </tr>
                                     ))}
                             </tbody>

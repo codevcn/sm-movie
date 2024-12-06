@@ -31,3 +31,7 @@ export const deleteMovie = (movie_id) => {
     const url = '/delete/' + movie_id;
     return instance.delete(url);
 };
+
+export const getNewestMovies = (count) => {
+    return instance.get('/newest/' + count);
+};
