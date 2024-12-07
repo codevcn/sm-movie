@@ -110,6 +110,7 @@ const CreateMovie = () => {
         setEditInfoStatus('loading');
         try {
             const res = await createMovie({ movie_info, genre_ids: pickedGenreIds });
+            console.log('>>> create res:', res);
             setMovieInfo((pre) => ({ ...pre, id: res.movie.Id }));
             toast.success(res.message);
         } catch (error) {
@@ -168,7 +169,7 @@ const CreateMovie = () => {
 
     return (
         <div className={cs('movie')}>
-            <h3 className="text-center mb-3 fs-1 fw-bold">Thêm phim mới</h3>
+            <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Thêm phim mới</h3>
             <Form className={cs('movie_form')} onSubmit={handleSubmit(Onsubmit)}>
                 <Row>
                     <Col>

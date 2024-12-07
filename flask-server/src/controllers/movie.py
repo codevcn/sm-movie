@@ -18,7 +18,6 @@ def create():
         data = request.get_json()
         movie_info = data.get("movie_info", None)
         genre_ids = data.get("genre_ids", None)
-
         if not movie_info or not genre_ids:
             return (
                 jsonify(
@@ -33,6 +32,7 @@ def create():
         # add movie
         movie = Movies(**movie_info)
         db.session.add(movie)
+        db.session.commit()
 
         # add genres
         movie_id = movie.Id
@@ -211,18 +211,19 @@ def get_all_movies():
 def get_movie_detail(id):
     try:
         movie = (
-            db.session.query(Movies, func.round(func.avg(Rating.Rating), 1).label("AverageRating"))
-            .join(
-                    Rating, Movies.Id == Rating.MovieId
-                )
+            db.session.query(
+                Movies, func.round(func.avg(Rating.Rating), 1).label("AverageRating")
+            )
+            .join(Rating, Movies.Id == Rating.MovieId)
             .filter(Movies.Id == id)
             .group_by(Movies.Id)
             .first()
         )
-        print(movie)
         if movie:
             movie_data = movie[0].to_dict()  # movie[0] là đối tượng Movie
-            movie_data['rating'] = movie[1]  # movie[1] là giá trị trung bình của rating_value
+            movie_data["rating"] = movie[
+                1
+            ]  # movie[1] là giá trị trung bình của rating_value
             return jsonify({"success": True, "data": movie_data}), 200
         else:
             return (
@@ -238,7 +239,7 @@ def get_movies_by_category(category, type):
         limit = 20
         curr_page = int(request.args.get("page", 1))
         query = db.session.query(Movies).filter(Movies.Type == category)
-        category = 'SERIES' if category == 'tv' else category
+        category = "SERIES" if category == "tv" else category
         if type == "top_rated":
             # Tính giá trị trung bình `Rating` và liên kết bảng
             query = (
@@ -249,59 +250,71 @@ def get_movies_by_category(category, type):
                     Movies.ReleaseDate,
                     Movies.Viewed,
                     Movies.Type,
-                    func.round(func.avg(Rating.Rating), 1).label("AverageRating")  # Giá trị trung bình Rating
+                    func.round(func.avg(Rating.Rating), 1).label(
+                        "AverageRating"
+                    ),  # Giá trị trung bình Rating
                 )
                 .join(
                     Rating, Movies.Id == Rating.MovieId
                 )  # Liên kết bảng `Movies` và `Rating`
-                .group_by(
-                    Movies.Id, Movies.Name, Movies.PosterPath
-                ).filter(Movies.Type == category)
+                .group_by(Movies.Id, Movies.Name, Movies.PosterPath)
+                .filter(Movies.Type == category)
                 .order_by(
                     desc("AverageRating")
                 )  # Sắp xếp giảm dần theo giá trị trung bình Rating
             )
         elif type == "popular":
             query = (
-                db.session.query(Movies.Id,
+                db.session.query(
+                    Movies.Id,
                     Movies.Name,
                     Movies.PosterPath,
                     Movies.ReleaseDate,
                     Movies.Viewed,
                     Movies.Type,
-                    func.round(func.avg(Rating.Rating), 1).label("AverageRating"))
-                    .join(
-                        Rating, Movies.Id == Rating.MovieId  # Liên kết bảng `Movies` và `Rating`
-                    ).group_by(
-                        Movies.Id, 
-                        Movies.Name, 
-                        Movies.PosterPath, 
-                        Movies.ReleaseDate, 
-                        Movies.Viewed, 
-                        Movies.Type 
-                    ).filter(Movies.Type == category)
+                    func.round(func.avg(Rating.Rating), 1).label("AverageRating"),
+                )
+                .join(
+                    Rating,
+                    Movies.Id == Rating.MovieId,  # Liên kết bảng `Movies` và `Rating`
+                )
+                .group_by(
+                    Movies.Id,
+                    Movies.Name,
+                    Movies.PosterPath,
+                    Movies.ReleaseDate,
+                    Movies.Viewed,
+                    Movies.Type,
+                )
+                .filter(Movies.Type == category)
                 .filter(Movies.Viewed >= 10)
                 .order_by(Movies.Viewed.desc())
             )
         elif type == "upcoming":
             date = datetime.now() + timedelta(days=1)
             query = (
-                db.session.query(Movies.Id,
+                db.session.query(
+                    Movies.Id,
                     Movies.Name,
                     Movies.PosterPath,
                     Movies.ReleaseDate,
                     Movies.Viewed,
                     Movies.Type,
-                    func.round(func.avg(Rating.Rating), 1).label("AverageRating")).join(
-                        Rating, Movies.Id == Rating.MovieId  # Liên kết bảng `Movies` và `Rating`
-                    ).group_by(
-                        Movies.Id, 
-                        Movies.Name, 
-                        Movies.PosterPath, 
-                        Movies.ReleaseDate, 
-                        Movies.Viewed, 
-                        Movies.Type 
-                    ).filter(Movies.Type == category)
+                    func.round(func.avg(Rating.Rating), 1).label("AverageRating"),
+                )
+                .join(
+                    Rating,
+                    Movies.Id == Rating.MovieId,  # Liên kết bảng `Movies` và `Rating`
+                )
+                .group_by(
+                    Movies.Id,
+                    Movies.Name,
+                    Movies.PosterPath,
+                    Movies.ReleaseDate,
+                    Movies.Viewed,
+                    Movies.Type,
+                )
+                .filter(Movies.Type == category)
                 .filter(Movies.ReleaseDate >= date)
                 .order_by(Movies.ReleaseDate.desc())
             )
@@ -318,9 +331,7 @@ def get_movies_by_category(category, type):
                     "ReleaseDate": movie.ReleaseDate,
                     "Viewed": movie.Viewed,
                     "Type": movie.Type,
-                    "AverageRating": (
-                        movie.AverageRating
-                    ),
+                    "AverageRating": (movie.AverageRating),
                 }
             )
 
@@ -444,10 +455,7 @@ def get_newest_movies(count):
         )
     try:
         movies = (
-            db.session.query(Movies)
-            .order_by(Movies.CreatedAt.desc())
-            .limit(6)
-            .all()
+            db.session.query(Movies).order_by(Movies.CreatedAt.desc()).limit(6).all()
         )
         return (
             jsonify({"success": True, "movies": [movie.to_dict() for movie in movies]}),

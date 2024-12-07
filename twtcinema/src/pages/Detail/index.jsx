@@ -19,7 +19,7 @@ export const MovieCard = ({ genres, movieDetail, watchNowBtn }) => {
     const [userFavoriteMovies, setUserFavoriteMovies] = useState();
     const [ratingData, setRatingData] = useState(0);
 
-    const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id , rating} = movieDetail;
+    const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id, rating } = movieDetail;
     const greaterThan0 = ratingData > 0;
 
     const user = JSON.parse(localStorage.getItem('user'));
@@ -262,8 +262,10 @@ function InforDetail() {
         setLoading(true);
         try {
             const { data } = await requestApi.getDetails(id);
+            console.log('>>> data:', data);
             setMovieDetail((pre) => ({ ...pre, ...data }));
         } catch (error) {
+            console.error('>>> error:', error);
             const msg = error.response?.data?.message || 'Có lỗi xảy ra';
             toast.error(msg);
         }

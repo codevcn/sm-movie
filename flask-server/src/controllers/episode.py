@@ -70,6 +70,7 @@ def get_all_episodes(movie_id):
                     {
                         "success": False,
                         "message": "Tập phim không tồn tại",
+                        "not_found_eps": True,
                     }
                 ),
                 404,

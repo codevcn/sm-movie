@@ -35,3 +35,7 @@ export const deleteMovie = (movie_id) => {
 export const getNewestMovies = (count) => {
     return instance.get('/newest/' + count);
 };
+
+export const moviesForToday = (user_id) => {
+    return instance.get('/nat/' + user_id);
+};

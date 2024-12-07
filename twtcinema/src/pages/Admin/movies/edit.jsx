@@ -78,7 +78,8 @@ const EditMovie = () => {
     const [openPickGenres, setOpenPickGenres] = useState();
     const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, setValue } = useForm();
+    console.log('>>> inf:', { countries, movieInfo });
 
     const getMovieGenres = async () => {
         try {
@@ -158,6 +159,12 @@ const EditMovie = () => {
     };
 
     useEffect(() => {
+        if (movieInfo && countries && countries.length > 0) {
+            setValue('CountryId', movieInfo.Country?.Id || countries[0]);
+        }
+    }, [movieInfo]);
+
+    useEffect(() => {
         const getGenres = async () => {
             try {
                 const res = await getAll();
@@ -209,7 +216,7 @@ const EditMovie = () => {
             ) : (
                 movieInfo && (
                     <>
-                        <h3 className="text-center mb-3 fs-1 fw-bold">Sửa thông tin cho phim mới</h3>
+                        <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Sửa thông tin cho phim mới</h3>
                         <Form className={cs('movie_form')} onSubmit={handleSubmit(Onsubmit)}>
                             <Row>
                                 <Col>

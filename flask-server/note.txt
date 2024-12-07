@@ -1,3 +1,9 @@
-** task:
-    - complete upload video UI
-    - xóa UI: background, trailer video
+- bảng Movies:
+	+ bỏ TrailerPath
+	+ bỏ BackdropPath
+
+- bảng Episodes:
+	+ bỏ Duration
+
+- bảng WatchHistory:
+	+ bỏ ProgressTime

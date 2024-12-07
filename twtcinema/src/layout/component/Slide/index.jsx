@@ -1,14 +1,13 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay } from 'swiper';
-import { useEffect, useState } from 'react';
-import requestApi from '~/apiService';
+import { useEffect, useRef, useState } from 'react';
 import SlideItems from './SlideItems';
 import 'swiper/css';
 import styles from './Slide.module.scss';
 import classNames from 'classnames/bind';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { getNewestMovies } from '../../../apiService/movie';
+import { moviesForToday } from '../../../apiService/movie';
 
 const cs = classNames.bind(styles);
 
@@ -18,8 +17,9 @@ const MovieSlide = ({ movie, category }) => {
 };
 
 function SlideShow({ category }) {
-    const [movieLists, setMovieItems] = useState([]);
+    const [movieLists, setMovieLists] = useState([]);
     const [loading, setLoading] = useState(true);
+    const showSuggestion = useRef(false);
 
     SwiperCore.use([Autoplay]);
 
@@ -35,17 +35,23 @@ function SlideShow({ category }) {
         function () {
             async function fetchMovie() {
                 setLoading(true);
-                try {
-                    if (category === 'movie') {
-                        const result = await getNewestMovies(5);
-                        const devidedMovies = splitArrayIntoChunks(result.movies);
-                        setMovieItems(devidedMovies);
-                    } else {
-                        const result = await requestApi.getTypeTV('popular', { params: { page: 1 } });
-                        setMovieItems(splitArrayIntoChunks(result.data.slice(0, 5)));
+                const userStr = localStorage.getItem('user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    try {
+                        const result = await moviesForToday(user.id);
+                        const movies = result.data;
+                        if (movies && movies.length >= 6) {
+                            showSuggestion.current = true; //setLoading sẽ khiến Component re-render
+                            let data = movies.slice(0, 6);
+                            const devidedMovies = splitArrayIntoChunks(data);
+                            setMovieLists(devidedMovies);
+                        } else {
+                            showSuggestion.current = false; //setLoading sẽ khiến Component re-render
+                        }
+                    } catch (error) {
+                        console.error('>>> error:', error);
                     }
-                } catch (error) {
-                    console.error('>>> error:', error);
                 }
                 setLoading(false);
             }
@@ -54,14 +60,14 @@ function SlideShow({ category }) {
         [category],
     );
 
-    return (
-        <div className={cs('wrapper')}>
-            <h2 className={cs('today-movies')}>Hôm nay xem gì?</h2>
-            <Swiper grabCursor={true} spaceBetween={0} loop={true} slidesPerView={1} autoplay={{ delay: 3000 }}>
-                {loading ? (
-                    <Skeleton className={cs('skeletonItem')} />
-                ) : (
-                    movieLists.map(({ id, movies }) => (
+    return loading ? (
+        <Skeleton className={cs('skeletonItem')} />
+    ) : (
+        showSuggestion.current && (
+            <div className={cs('wrapper')}>
+                <h2 className={cs('today-movies')}>Hôm nay xem gì?</h2>
+                <Swiper grabCursor={true} spaceBetween={0} loop={true} slidesPerView={1} autoplay={{ delay: 3000 }}>
+                    {movieLists.map(({ id, movies }) => (
                         <SwiperSlide key={id}>
                             <div className={cs('slide-items-list')}>
                                 <MovieSlide category={category} movie={movies[0]} />
@@ -69,10 +75,10 @@ function SlideShow({ category }) {
                                 <MovieSlide category={category} movie={movies[2]} />
                             </div>
                         </SwiperSlide>
-                    ))
-                )}
-            </Swiper>
-        </div>
+                    ))}
+                </Swiper>
+            </div>
+        )
     );
 }
 

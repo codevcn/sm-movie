@@ -98,7 +98,8 @@ export const UploadEpisodes = ({ movieDetail }) => {
     const [uploadNewEpLoading, setUploadNewEpLoading] = useState(false);
     const [changeVideoLoading, setChangeVideoLoading] = useState(false);
 
-    const episodes_len = episodes.length;
+    const episodes_len = (episodes && episodes.length) || 0;
+    const nextEpNum = episodes_len > 0 ? episodes[episodes_len - 1].EpisodeNumber + 1 : 1;
 
     const { Id } = movieDetail;
     const movieType = movieDetail.Type.toLowerCase();
@@ -124,11 +125,10 @@ export const UploadEpisodes = ({ movieDetail }) => {
         if (video) {
             setUploadNewEpLoading(true);
 
-            const epNum = episodes[episodes_len - 1].EpisodeNumber + 1;
             const formData = new FormData();
             formData.append('file', video);
             formData.append('movie_id', Id);
-            formData.append('ep_num', epNum);
+            formData.append('ep_num', nextEpNum);
 
             let data;
             try {
@@ -215,8 +215,7 @@ export const UploadEpisodes = ({ movieDetail }) => {
                         </React.Fragment>
                     ))}
 
-                {((episodes && episodes.length > 0 && movieType === 'series') ||
-                    (movieType === 'movie' && episodes_len === 0)) && (
+                {(movieType === 'series' || (movieType === 'movie' && episodes_len === 0)) && (
                     <label className="ep-picker" htmlFor="upload-new-ep-input">
                         <div className="upload-icon-wrapper">
                             {uploadNewEpLoading ? (
@@ -228,8 +227,7 @@ export const UploadEpisodes = ({ movieDetail }) => {
                             )}
                         </div>
                         <div className="ep-number-value">
-                            {(uploadNewEpLoading ? 'Đang tải lên tập ' : 'Tải lên tập ') +
-                                (episodes[episodes_len - 1].EpisodeNumber + 1)}
+                            {(uploadNewEpLoading ? 'Đang tải lên tập ' : 'Tải lên tập ') + nextEpNum}
                         </div>
                     </label>
                 )}
