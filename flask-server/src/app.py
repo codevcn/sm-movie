@@ -28,6 +28,7 @@ from routes.genres import register_genre_routes
 from routes.movie import register_movie_routes
 from routes.country import register_country_routes
 
+from services.train_model import (train_knn_model,predict_knn,train_svd_model)
 
 def create_app():
     app = Flask(__name__)
@@ -52,10 +53,15 @@ def create_app():
     register_genre_routes(app)
     register_movie_routes(app)
     register_country_routes(app)
-
+    with app.app_context():
+        train_knn_model()
+        train_svd_model()
+        
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
+    
     app.run(debug=True, port=8888)
+    

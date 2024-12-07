@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, Date, DateTime, Float, Enum, ForeignKey, func
 from configs.db_connect import db
 from sqlalchemy.orm import relationship
-
+from sqlalchemy.orm import aliased
 
 class Movies(db.Model):
     __tablename__ = "Movies"
