@@ -10,19 +10,21 @@ import {
     faSpinner,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 import { UpdateIcon } from '~/components/Icon';
 import image from '~/assets/Images';
 import { changePassword, deleteUserClient, updateUserClient } from '~/apiService/user';
 import { toast } from 'react-toastify';
 import Spinner from 'react-bootstrap/Spinner';
 import { uploadAvatar } from '../../apiService/user';
+import { AuthContext } from '~/context';
 
 const cs = classNames.bind(styles);
 
 function Profile() {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
+    const { role } = useContext(AuthContext);
 
     const [loading, setLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -103,17 +105,22 @@ function Profile() {
         confirmBtn.current.addEventListener('click', handleConfirmUpdate);
     };
 
-    //Delete
+    //Delete user
     const handleConfirmDelete = async () => {
+        setDeleteLoading(true);
         let success = false;
-        let result;
+        console.log('>>> user data before delete:', user);
         try {
-            result = await deleteUserClient({
-                email: user.email,
-                password: reAuthInput.current.value,
-            });
-            success = result.success;
+            await deleteUserClient(
+                {
+                    email: user.email,
+                    oldPassword: reAuthInput.current.value,
+                },
+                user.id,
+            );
+            success = true;
         } catch (error) {
+            console.error('>>> error:', error);
             const msg = error.response?.data?.message || 'Có lỗi xảy ra';
             toast.error(msg);
         }
@@ -125,6 +132,7 @@ function Profile() {
             localStorage.removeItem('user');
             navigate('/movie');
         }
+        setDeleteLoading(false);
     };
 
     const handleDelete = async () => {
@@ -165,7 +173,7 @@ function Profile() {
             <h4 className={cs('header')}>Thông Tin Cá Nhân</h4>
             <div className={cs('container')}>
                 <div className={cs('info')}>
-                    <h4 className={cs('title')}>Thông tin người dùng</h4>
+                    <h4 className={cs('title')}>{`Thông tin người dùng${user && role ? ' (Quản trị viên)' : ''}`}</h4>
                     <div className={cs('content')}>
                         <div className={cs('infoUser')}>
                             <p className={cs('contentTitle')}>
@@ -211,15 +219,17 @@ function Profile() {
                             </i>
                         </div>
 
-                        <div className={cs('delete')}>
-                            {deleteLoading ? (
-                                <Spinner animation="border" role="status"></Spinner>
-                            ) : (
-                                <button className={cs('deleteBtn')} onClick={handleDelete}>
-                                    Xóa tài khoản
-                                </button>
-                            )}
-                        </div>
+                        {user && !role && (
+                            <div className={cs('delete')}>
+                                {deleteLoading ? (
+                                    <Spinner animation="border" role="status"></Spinner>
+                                ) : (
+                                    <button className={cs('deleteBtn')} onClick={handleDelete}>
+                                        Xóa tài khoản
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -258,9 +268,13 @@ function Profile() {
                         placeholder="Nhập mật khẩu..."
                         type="password"
                     />
-                    <button ref={confirmBtn} className={cs('modalBtn')}>
-                        Xác nhận
-                    </button>
+                    {deleteLoading ? (
+                        <Spinner animation="border" role="status"></Spinner>
+                    ) : (
+                        <button ref={confirmBtn} className={cs('modalBtn')}>
+                            Xác nhận
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

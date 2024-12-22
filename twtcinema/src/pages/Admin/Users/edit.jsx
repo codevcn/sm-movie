@@ -17,19 +17,24 @@ const EditUser = () => {
     const [user, setUser] = useState({});
     const [avatar, setAvatar] = useState('');
     const { email } = useParams();
-    const naviagte = useNavigate();
     const { register, handleSubmit, reset } = useForm();
     const [loading, setLoading] = useState(false);
 
+    const userDataString = localStorage.getItem('user');
+    const userData = userDataString ? JSON.parse(userDataString) : null;
+
     const Onsubmit = async (data) => {
         setLoading(true);
-        const { ...movie_info } = data;
+        const { ...user_info } = data;
+        console.log('>>> user info ready to update:', user_info);
         try {
             if (avatar) {
-                movie_info.Avatar = avatar;
+                user_info.Avatar = avatar;
             }
-            await editUser(movie_info, email);
-            naviagte('/admin/dashboard/users');
+            await editUser(user_info, email);
+            if (user && user.Id === userData.id) {
+                localStorage.setItem('user', JSON.stringify({ ...userData, name: user_info.Name }));
+            }
             toast.success('Cập nhật thành công');
         } catch (error) {
             toast.success(error.message);
@@ -65,7 +70,9 @@ const EditUser = () => {
                 const res = await uploadAvatar(formData, user.Id);
                 if (res.success) {
                     toast.success(res.message);
-                    localStorage.setItem('user', JSON.stringify({ ...user, avatar: res.url }));
+                    if (user && user.Id === userData.id) {
+                        localStorage.setItem('user', JSON.stringify({ ...userData, avatar: res.url }));
+                    }
                     setAvatar(res.url);
                 } else {
                     toast.error(res.message);
@@ -92,16 +99,18 @@ const EditUser = () => {
                     <Form.Control className="mt-4" type="file" style={{ border: 'none' }} onChange={handleUploadImg} />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Tên người dùng</Form.Label>
+                    <Form.Label>Tên của người dùng</Form.Label>
                     <Form.Control required type="text" {...register('Name', { value: user.Name })} />
                 </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Check
-                        type="checkbox"
-                        label="Quyền quản trị"
-                        {...register('IsAdmin', { value: user.IsAdmin })}
-                    />
-                </Form.Group>
+                {user && user.Id !== userData.id && (
+                    <Form.Group className="mb-3">
+                        <Form.Check
+                            type="checkbox"
+                            label="Quyền quản trị"
+                            {...register('IsAdmin', { value: user.IsAdmin })}
+                        />
+                    </Form.Group>
+                )}
                 <button type="submit" className={cs('movie_btn_submit')}>
                     {loading ? <Spinner animation="border" role="status"></Spinner> : <span>Lưu thông tin</span>}
                 </button>

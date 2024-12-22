@@ -145,8 +145,12 @@
                 font-size: 1.3rem;
                 font-weight: 500;
 
+                &.active {
+                    background-color: var(--primary);
+                }
+
                 &:hover {
-                    background-color: var(--primary); /* Nền xanh khi hover */
+                    background-color: var(--primary); /* Nền khi hover */
                     color: #ffffff; /* Chữ trắng khi hover */
                 }
             }

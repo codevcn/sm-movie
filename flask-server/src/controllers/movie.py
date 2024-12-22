@@ -40,8 +40,8 @@ def create():
             MovieGenres(MovieId=movie_id, GenreId=genre_id) for genre_id in genre_ids
         ]
         db.session.add_all(movie_genre_records)
-
         db.session.commit()
+
         return (
             jsonify(
                 {
@@ -54,6 +54,7 @@ def create():
         )
     except SQLAlchemyError as e:
         db.session.rollback()
+        print('>>> error:', e)
         return jsonify({"success": False, "message": str(e)}), 500
 
 
@@ -214,7 +215,7 @@ def get_movie_detail(id):
             db.session.query(
                 Movies, func.round(func.avg(Rating.Rating), 1).label("AverageRating")
             )
-            .join(Rating, Movies.Id == Rating.MovieId)
+            .outerjoin(Rating, Movies.Id == Rating.MovieId)
             .filter(Movies.Id == id)
             .group_by(Movies.Id)
             .first()

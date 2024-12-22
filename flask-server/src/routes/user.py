@@ -44,10 +44,10 @@ def register_user_routes(app: Flask):
         "/change-password", view_func=change_password, methods=["PUT"]
     )
     api_blueprint.add_url_rule(
-        "/delete/<int:id>", view_func=delete_user, methods=["DELETE"]
+        "/delete/<int:user_id>", view_func=delete_user, methods=["DELETE"]
     )
     api_blueprint.add_url_rule(
-        "/delete-user-client", view_func=delete_user, methods=["PUT"]
+        "/delete-user-client/<int:user_id>", view_func=delete_user, methods=["PUT"]
     )
     api_blueprint.add_url_rule(
         "/upload-avatar/<string:user_id>",

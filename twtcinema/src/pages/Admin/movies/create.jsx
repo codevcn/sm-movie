@@ -110,11 +110,12 @@ const CreateMovie = () => {
         setEditInfoStatus('loading');
         try {
             const res = await createMovie({ movie_info, genre_ids: pickedGenreIds });
-            console.log('>>> create res:', res);
+            console.log('>>> create movie res:', res);
             setMovieInfo((pre) => ({ ...pre, id: res.movie.Id }));
             toast.success(res.message);
         } catch (error) {
-            toast.error(error.message);
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
         setEditInfoStatus('done');
     };

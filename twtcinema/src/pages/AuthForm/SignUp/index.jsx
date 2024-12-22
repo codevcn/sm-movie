@@ -29,23 +29,28 @@ const Signup = () => {
             if (password !== password2) {
                 showToastMessage('error', 'Mật khẩu không khớp');
             } else {
-                const data = {
-                    name,
-                    email,
-                    avatar: image.avatar,
-                    password,
-                };
-                const res = await register(data);
-                if (res.success) {
-                    localStorage.setItem('user', JSON.stringify(res.data));
-                    navigate('/movie');
-                    setName('');
-                    setEmail('');
-                    setPassword('');
-                    setPassword2('');
-                    showToastMessage('success', res.message);
-                } else {
-                    showToastMessage('error', res.message);
+                try {
+                    const data = {
+                        name,
+                        email,
+                        avatar: image.avatar,
+                        password,
+                    };
+                    const res = await register(data);
+                    if (res.success) {
+                        localStorage.setItem('user', JSON.stringify(res.data));
+                        navigate('/movie');
+                        setName('');
+                        setEmail('');
+                        setPassword('');
+                        setPassword2('');
+                        showToastMessage('success', res.message);
+                    } else {
+                        showToastMessage('error', res.message);
+                    }
+                } catch (error) {
+                    const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+                    showToastMessage('error', msg);
                 }
             }
         }

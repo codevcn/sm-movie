@@ -6,7 +6,6 @@ import { uploadEpisode } from '../../../apiService/episode';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
-import Plyr from 'plyr-react';
 import 'plyr-react/plyr.css';
 import './Upload-episode.scss';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 export const UploadEpisode = ({ movieType, movieId }) => {
     const [video, setVideo] = useState();
     const [uploadStatus, setUploadStatus] = useState();
-    const [movieURL, setMovieURL] = useState();
     const naviagte = useNavigate();
 
     const pickVideo = (e) => {
@@ -46,58 +44,12 @@ export const UploadEpisode = ({ movieType, movieId }) => {
         }
         if (url) {
             toast.success('Tải lên tập phim thành công!');
-            setMovieURL(url);
             setTimeout(() => {
                 naviagte('/admin/dashboard/movies');
             }, 1000);
         }
         setUploadStatus('done');
     };
-
-    if (movieURL) {
-        const videoSrc = {
-            type: 'video',
-            sources: [
-                {
-                    src: movieURL,
-                    type: 'video/mp4',
-                },
-            ],
-        };
-
-        const plyrOptions = {
-            controls: [
-                'play-large', // Nút phát ở giữa
-                'rewind', // Nút tua lùi
-                'play', // Nút phát/tạm dừng
-                'fast-forward', // Nút tua tới
-                'progress', // Thanh tiến trình
-                'current-time', // Thời gian hiện tại
-                'duration', // Tổng thời gian
-                'mute', // Nút tắt tiếng
-                'volume', // Điều chỉnh âm lượng
-                'settings', // Menu cài đặt
-                'pip', // Picture-in-Picture
-                'airplay', // Airplay
-                'fullscreen', // Toàn màn hình
-            ],
-            settings: ['captions', 'quality', 'speed'],
-            autoplay: false,
-            muted: false,
-            hideControls: true,
-            tooltips: { controls: true, seek: true },
-            seekTime: 10,
-        };
-
-        return (
-            <div className="upload-video-section">
-                <h2 className="upload-title">Tập phim đã tải lên</h2>
-                <div id="video-player-wrapper">
-                    <Plyr source={videoSrc} options={plyrOptions} />
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="upload-video-section">

@@ -3,6 +3,7 @@ from models.users import Users
 from models.comments import Comments
 from models.favorite_list import FavoriteList
 from models.watch_history import WatchHistory
+from models.rating import Rating
 from configs.db_connect import db
 import bcrypt
 from datetime import datetime, timedelta
@@ -122,10 +123,11 @@ def delete_user(user_id):
             old_password = data.get("oldPassword")
             user = validate_user(user_id, None, old_password)
             if user:
-                db.session.delete(user)
                 Comments.query.filter_by(UserId=user_id).delete()
                 FavoriteList.query.filter_by(UserId=user_id).delete()
                 WatchHistory.query.filter_by(UserId=user_id).delete()
+                Rating.query.filter_by(UserId=user_id).delete()
+                db.session.delete(user)
                 db.session.commit()
 
                 return (
@@ -143,6 +145,7 @@ def delete_user(user_id):
                 400,
             )
     except Exception as e:
+        print(">>> error of delete user:", e)
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
 

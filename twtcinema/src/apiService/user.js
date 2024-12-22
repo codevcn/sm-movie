@@ -25,8 +25,8 @@ export const updateUserClient = (data, email) => {
     return instance.put(url, data);
 };
 
-export const deleteUserClient = (data) => {
-    const url = '/user/delete-user-client';
+export const deleteUserClient = (data, user_id) => {
+    const url = '/user/delete-user-client/' + user_id;
     return instance.put(url, data);
 };
 

@@ -107,6 +107,14 @@ function MoviesPage() {
         setCategory(e.target.value);
     };
 
+    const searchMovies = (e) => {
+        if (inputValue) {
+            navigate(`/admin/dashboard/movies/search/${inputValue}`);
+        } else {
+            navigate('/admin/dashboard/movies');
+        }
+    };
+
     return (
         <div className={cs('admin_container', 'movie')}>
             <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Danh sách phim</h3>
@@ -122,16 +130,11 @@ function MoviesPage() {
                         required
                         onChange={handleChange}
                     />
-                    <Link
-                        to={`/admin/dashboard/movies/search/${inputValue}`}
-                        onClick={(e) => {
-                            if (!inputValue) e.preventDefault();
-                        }}
-                    >
+                    <div className={cs('search-movies-box')} onClick={searchMovies}>
                         <button>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                         </button>
-                    </Link>
+                    </div>
                 </div>
                 {!month && !searchValue && (
                     <Form.Select className={cs('movie_select-form')} onChange={(e) => handleChangeType(e)}>

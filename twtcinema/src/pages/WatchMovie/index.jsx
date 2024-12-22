@@ -17,6 +17,7 @@ import 'plyr-react/plyr.css';
 import './WatchMovie.scss';
 import { getEpisodes } from '../../apiService/episode';
 import { EpisodeList, MovieCard, Overview } from '../Detail';
+import { toast } from 'react-toastify';
 
 function WatchMovie() {
     const { type, movieId } = useParams();
@@ -31,7 +32,7 @@ function WatchMovie() {
     const playingFlag = useRef(0);
 
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log('>>> details:', { movieDetail, movieId, playingEp, user });
+    console.log('>>> stuff:', { movieDetail, movieId, playingEp, user });
 
     const plyrOptions = {
         controls: [
@@ -80,6 +81,10 @@ function WatchMovie() {
         handleSetPlayingEp(episodes);
     }, [episodeNumber, episodes]);
 
+    useEffect(() => {
+        playingFlag.current = 0;
+    }, [playingEp]);
+
     async function getMovieDetail() {
         setLoading(true);
         try {
@@ -90,6 +95,8 @@ function WatchMovie() {
             setLoading(false);
         } catch (error) {
             console.error('>>> error:', error);
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
     }
 
@@ -100,6 +107,8 @@ function WatchMovie() {
                 setEpisodes(data);
             } catch (error) {
                 console.error('>>> error:', error);
+                const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+                toast.error(msg);
             }
         }
     };
@@ -111,8 +120,6 @@ function WatchMovie() {
             console.error('>>> error:', error);
         }
     };
-
-    useEffect(() => {}, [playingEp]);
 
     const handleAddHistory = async () => {
         try {
@@ -129,7 +136,7 @@ function WatchMovie() {
 
     return (
         <div className="watch-movie-section">
-            {playingEp && (
+            {playingEp ? (
                 <div className="video-player-wrapper">
                     <Plyr
                         source={{
@@ -144,9 +151,16 @@ function WatchMovie() {
                         options={plyrOptions}
                     />
                 </div>
+            ) : (
+                <Skeleton height={450} />
             )}
             {movieDetail && episodes && (
-                <EpisodeList episodes={episodes} type={movieDetail.Type} movieDetail={movieDetail} />
+                <EpisodeList
+                    episodes={episodes}
+                    type={movieDetail.Type}
+                    movieDetail={movieDetail}
+                    playingEp={playingEp}
+                />
             )}
             {movieDetail && genres && genres.length > 0 && (
                 <div className="movie-details">

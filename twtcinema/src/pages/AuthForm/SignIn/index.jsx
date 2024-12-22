@@ -24,18 +24,19 @@ const Login = () => {
         if (!email || !password) {
             showToastMessage('error', 'Vui lòng nhập đủ thông tin');
         } else {
-            try{
-            const res = await login({
-                email,
-                password,
-            });
-            if (res.success) {
-                localStorage.setItem('user', JSON.stringify(res.data));
-                navigate('/movie');
-                showToastMessage('success', res.message);
-                setEmail('');
-                setPassword('');
-            } } catch(e){
+            try {
+                const res = await login({
+                    email,
+                    password,
+                });
+                if (res.success) {
+                    localStorage.setItem('user', JSON.stringify(res.data));
+                    navigate('/movie');
+                    showToastMessage('success', res.message);
+                    setEmail('');
+                    setPassword('');
+                }
+            } catch (e) {
                 showToastMessage('error', e.response.data.message);
             }
         }

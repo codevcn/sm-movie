@@ -157,4 +157,8 @@ $myvar-regular-bgcl: var(--primary);
             color: $myvar-regular-bgcl;
         }
     }
+
+    .search-movies-box {
+        display: inline-block;
+    }
 }

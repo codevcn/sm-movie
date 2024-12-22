@@ -86,7 +86,7 @@ function CommentMovie() {
                         </Table>
                     </>
                 ) : (
-                    loading && (
+                    !loading && (
                         <h2 style={{ textAlign: 'center', color: '#fe2c55', marginTop: '20px' }}>
                             Hiện chưa có bình luận nào
                         </h2>

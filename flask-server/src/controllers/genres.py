@@ -12,7 +12,12 @@ def get_all_genres():
         if "limit" in params:
             limit = int(params.get("limit"))
             curr_page = int(params.get("page", 1))
-            genres = Genres.query.offset(limit * (curr_page - 1)).limit(limit).all()
+            genres = (
+                Genres.query.order_by(Genres.CreatedAt.desc())
+                .offset(limit * (curr_page - 1))
+                .limit(limit)
+                .all()
+            )
             count_documents = Genres.query.count()
 
             return (

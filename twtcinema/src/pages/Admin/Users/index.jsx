@@ -26,14 +26,14 @@ function UsersPage() {
         getUsers();
     }, []);
 
-    const handleDeleteUser = async (id) => {
-        if (window.confirm('Are you sure you want to delete')) {
-            const res = await deleteUser(id);
-            if (res.success) {
-                await getUsers();
-            }
-        }
-    };
+    // const handleDeleteUser = async (id) => {
+    //     if (window.confirm('Are you sure you want to delete')) {
+    //         const res = await deleteUser(id);
+    //         if (res.success) {
+    //             await getUsers();
+    //         }
+    //     }
+    // };
 
     return (
         <div className={cs('admin_container', 'user')}>
@@ -70,9 +70,9 @@ function UsersPage() {
                                             Sửa
                                         </button>
                                     </Link>
-                                    <Button variant="danger" onClick={() => handleDeleteUser(Id)}>
+                                    {/* <Button variant="danger" onClick={() => handleDeleteUser(Id)}>
                                         Xoá
-                                    </Button>
+                                    </Button> */}
                                 </div>
                             </td>
                         </tr>

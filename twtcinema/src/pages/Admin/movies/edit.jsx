@@ -128,13 +128,14 @@ const EditMovie = () => {
         return false;
     };
 
-    const Onsubmit = async (data) => {
+    const updateMovieHandler = async (data) => {
         console.log('>>> posTer:', posTer);
         console.log('>>> data:', data);
         console.log('>>> typed data:', typedData);
 
         const { ...movie_info } = data;
         movie_info.PosterPath = posTer;
+        movie_info.Type = movieInfo.Type;
         const pickedGenreIds = typedData.genreIds;
 
         if (!validateData({ ...movie_info, Genres: pickedGenreIds })) {
@@ -151,11 +152,6 @@ const EditMovie = () => {
             toast.error(error.message);
         }
         setEditInfoStatus('done');
-    };
-
-    const changeType = (e) => {
-        const type = e.target.value;
-        setMovieInfo((pre) => ({ ...pre, Type: type }));
     };
 
     useEffect(() => {
@@ -217,7 +213,7 @@ const EditMovie = () => {
                 movieInfo && (
                     <>
                         <h3 className="text-center mb-3 mt-5 fs-1 fw-bold">Sửa thông tin cho phim mới</h3>
-                        <Form className={cs('movie_form')} onSubmit={handleSubmit(Onsubmit)}>
+                        <Form className={cs('movie_form')} onSubmit={handleSubmit(updateMovieHandler)}>
                             <Row>
                                 <Col>
                                     <Form.Group className="mb-3">
@@ -231,17 +227,15 @@ const EditMovie = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col>
+                                {/* <Col>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Danh mục</Form.Label>
-                                        <Form.Select
-                                            {...register('Type', { value: movieInfo.Type, onChange: changeType })}
-                                        >
+                                        <Form.Select {...register('Type', { value: movieInfo.Type })}>
                                             <option value="MOVIE">Phim Lẻ</option>
                                             <option value="SERIES">Phim Dài Tập</option>
                                         </Form.Select>
                                     </Form.Group>
-                                </Col>
+                                </Col> */}
                                 <Col>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Thể Loại</Form.Label>
