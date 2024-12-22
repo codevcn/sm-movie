@@ -22,7 +22,7 @@ import { AuthContext } from '~/context';
 const cs = classNames.bind(styles);
 
 function Profile() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
     const { role } = useContext(AuthContext);
 
@@ -128,9 +128,9 @@ function Profile() {
             toast.success('Xóa người dùng thành công');
             modalRef.current.classList.remove(cs('open'));
             reAuthInput.current.value = '';
-            confirmBtn.current.removeEventListener('click', handleConfirmDelete);
+            confirmBtn.current?.removeEventListener('click', handleConfirmDelete);
             localStorage.removeItem('user');
-            navigate('/movie');
+            window.location.href = '/';
         }
         setDeleteLoading(false);
     };
@@ -268,13 +268,10 @@ function Profile() {
                         placeholder="Nhập mật khẩu..."
                         type="password"
                     />
-                    {deleteLoading ? (
-                        <Spinner animation="border" role="status"></Spinner>
-                    ) : (
-                        <button ref={confirmBtn} className={cs('modalBtn')}>
-                            Xác nhận
-                        </button>
-                    )}
+
+                    <button ref={confirmBtn} className={cs('modalBtn')}>
+                        {deleteLoading ? <Spinner animation="border" role="status"></Spinner> : 'Xác nhận'}
+                    </button>
                 </div>
             </div>
         </div>

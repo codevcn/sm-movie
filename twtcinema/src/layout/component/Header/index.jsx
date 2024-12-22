@@ -16,13 +16,12 @@ function Header({ className, onClick }) {
 
     return (
         <header className={cs('wrapper', className)}>
-            <Link to="/movie" className={cs('logo')}>
+            <Link to="/" className={cs('logo')}>
                 <img className={cs('logo-img')} src={image.logo} alt="logo" />
                 <span className={cs('first-titl')}>TwT</span>
                 <span className={cs('last-titl')}>Cinema</span>
             </Link>
             <SearchBox />
-
 
             <div className={cs('login')}>
                 {userFirebase ? (
