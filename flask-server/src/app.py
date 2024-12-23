@@ -27,7 +27,8 @@ from routes.comment import register_comment_routes
 from routes.genres import register_genre_routes
 from routes.movie import register_movie_routes
 from routes.country import register_country_routes
-
+import codecs
+codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None)
 from services.train_model import (train_knn_model,predict_knn,train_svd_model)
 
 def create_app():

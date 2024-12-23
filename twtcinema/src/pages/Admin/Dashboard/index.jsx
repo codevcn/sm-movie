@@ -89,7 +89,9 @@ function StatisticDashboard() {
                 </div>
                 {/* <div className={cs('box-item')}></div> */}
             </div>
-            <LineChart width={1200} height={400} data={totalUser} style={{ margin: '0 auto', fontSize: '1.5rem' }}>
+            
+            <h4>Số Lượng Người Dùng Đăng Kí Trên Hệ Thống</h4>
+            <LineChart width={1200} height={380} data={totalUser} style={{ margin: '0 auto', fontSize: '1.5rem' }}>
                 <Line type="monotone" dataKey="count" stroke="#8884d8" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -97,7 +99,6 @@ function StatisticDashboard() {
                 <CartesianGrid stroke="#f5f5f5" />
                 <Legend />
             </LineChart>
-            <h4>Số Lượng Người Dùng Đăng Kí Trên Hệ Thống</h4>
         </div>
     );
 }

@@ -14,12 +14,13 @@ import { toast } from 'react-toastify';
 import { rateAMovie, getRating } from '../../apiService/user';
 import Comment from '../../layout/component/Comments';
 
-export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow }) => {
+export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow,epsLen }) => {
     const navigate = useNavigate();
     const [userFavoriteMovies, setUserFavoriteMovies] = useState();
     const [ratingData, setRatingData] = useState(0);
+    console.log('>>>movieDetail:', movieDetail);
 
-    const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id, rating } = movieDetail;
+    const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id, rating, TotalEpisodes } = movieDetail;
     const greaterThan0 = ratingData > 0;
 
     const user = JSON.parse(localStorage.getItem('user'));
@@ -109,6 +110,28 @@ export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow }) 
         getRatingHandler();
     }, [movieDetail]);
 
+    const isUpcoming = moment(ReleaseDate, 'ddd, DD MMM YYYY HH:mm:ss GMT').isAfter(moment()) ? 'Sắp Công Chiếu' : null;
+
+    const renderStatus = () => {
+        if (isUpcoming) {
+            return isUpcoming;
+        } else {  
+            if (Type.toLowerCase() === 'movie') {
+                if (TotalEpisodes && TotalEpisodes > 0) {
+                    return 'Đã Hoàn Thành';
+                } else {
+                    return 'Chưa Đăng Tải';
+                }
+            }else{
+                if (TotalEpisodes && TotalEpisodes > 0) {
+                    return String(epsLen) + "/" + String(TotalEpisodes) +" Tập";
+                } else {
+                    return 'Chưa Đăng Tải';
+                }
+            }
+        }
+    };
+
     return (
         <div className="movie-card">
             <div className="movie-poster">
@@ -123,7 +146,7 @@ export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow }) 
                 </p>
                 <p>
                     <strong>Ngày công chiếu: </strong>
-                    <span>{moment(ReleaseDate, 'ddd, DD MMM YYYY HH:mm:ss [GMT]').format('DD/MM/YYYY HH:mm')}</span>
+                    <span>{moment(ReleaseDate, 'ddd, DD MMM YYYY HH:mm:ss [GMT]').format('DD/MM/YYYY')}</span>
                 </p>
                 <p>
                     <strong>Quốc gia: </strong>
@@ -138,15 +161,23 @@ export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow }) 
                     <span>{typeMovie(Type)}</span>
                 </p>
                 <p>
-                    <strong>Lượt xem: </strong>
-                    <span>{Viewed || 0}</span>
+                    <strong>Tình trạng: </strong>
+                    <span>{renderStatus()}</span>
                 </p>
-                <p>
-                    <strong>Đánh giá: </strong>
-                    <span>{rating || 0}</span>
-                </p>
+                {!isUpcoming && (
+                    <>
+                        <p>
+                            <strong>Lượt xem: </strong>
+                            <span>{Viewed || 0}</span>
+                        </p>
+                        <p>
+                            <strong>Đánh giá: </strong>
+                            <span>{rating || 0}</span>
+                        </p>
+                    </>
+                )}
 
-                {user && (
+                {user && !isUpcoming && (
                     <div className="rating">
                         <div className="stars">
                             <Rating
@@ -165,10 +196,12 @@ export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow }) 
                 )}
 
                 <div className="actions">
-                    <button className="watch-now-btn" onClick={() => goToWatchMovie(1)}>
-                        <FontAwesomeIcon icon={faCirclePlay} />
-                        <span>Xem ngay</span>
-                    </button>
+                    {!isUpcoming && (
+                        <button className="watch-now-btn" onClick={() => goToWatchMovie(1)}>
+                            <FontAwesomeIcon icon={faCirclePlay} />
+                            <span>Xem ngay</span>
+                        </button>
+                    )}
                     {user && (
                         <button className="add-to-favorite" onClick={handleAddFavoriteMovie}>
                             {userFavoriteMovies && userFavoriteMovies.includes(Id) ? (
@@ -302,6 +335,7 @@ function InforDetail() {
                     genres={genres}
                     getMovieDetail={getMovieDetail}
                     canWatchNow={episodes && episodes.length > 0}
+                    epsLen={(episodes || 0) && episodes.length}
                 />
                 {episodes && episodes.length > 0 && (
                     <EpisodeList

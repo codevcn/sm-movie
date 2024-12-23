@@ -1,7 +1,7 @@
 from models.rating import Rating
 from flask import request, jsonify
 from configs.db_connect import db
-
+from services.train_model import (train_knn_model,predict_knn,train_svd_model)
 
 def user_rate_movie():
     try:
@@ -15,7 +15,10 @@ def user_rate_movie():
         else:
             new_rating = Rating(UserId=user_id, MovieId=movie_id, Rating=rating)
             db.session.add(new_rating)
+        train_svd_model()
+        print("reTrain success!!!")
         db.session.commit()
+        
         return (
             jsonify(
                 {

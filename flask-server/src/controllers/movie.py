@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 from models.movie_genres import MovieGenres
 
-
+from services.train_model import (train_knn_model,predict_knn,train_svd_model)
 def create():
     try:
         data = request.get_json()
@@ -40,6 +40,7 @@ def create():
             MovieGenres(MovieId=movie_id, GenreId=genre_id) for genre_id in genre_ids
         ]
         db.session.add_all(movie_genre_records)
+        train_knn_model()
         db.session.commit()
 
         return (
@@ -88,6 +89,7 @@ def update(movie_id):
 
         if movie:
             movie_query.update(movie_info)
+            train_knn_model()
             db.session.commit()
             return (
                 jsonify({"success": True, "message": "Cập nhật phim thành công"}),
@@ -160,7 +162,8 @@ def delete(movie_id):
 
             # Sau khi xóa liên quan sẽ xóa phim
             db.session.delete(movie)
-
+            train_knn_model()
+            train_svd_model()
             db.session.commit()
 
             return jsonify({"success": True, "message": "Xoá phim thành công"}), 200
@@ -255,7 +258,7 @@ def get_movies_by_category(category, type):
                         "AverageRating"
                     ),  # Giá trị trung bình Rating
                 )
-                .join(
+                .outerjoin(
                     Rating, Movies.Id == Rating.MovieId
                 )  # Liên kết bảng `Movies` và `Rating`
                 .group_by(Movies.Id, Movies.Name, Movies.PosterPath)
@@ -303,7 +306,7 @@ def get_movies_by_category(category, type):
                     Movies.Type,
                     func.round(func.avg(Rating.Rating), 1).label("AverageRating"),
                 )
-                .join(
+                .outerjoin(
                     Rating,
                     Movies.Id == Rating.MovieId,  # Liên kết bảng `Movies` và `Rating`
                 )
