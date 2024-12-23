@@ -23,7 +23,7 @@ class WatchHistory(db.Model):
     Episode = relationship("Episodes", back_populates="WatchHistories", lazy="select")
 
     def __repr__(self):
-        return f"<WatchHistory(UserId={self.UserId}, EpisodeId={self.EpisodeId}, ProgressTime={self.ProgressTime})>"
+        return f"<WatchHistory(UserId={self.UserId}, EpisodeId={self.EpisodeId})>"
 
     def to_dict(self):
         return {

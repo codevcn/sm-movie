@@ -149,7 +149,8 @@ const EditMovie = () => {
             setMovieInfo((pre) => ({ ...pre, ...data }));
             toast.success(res.message);
         } catch (error) {
-            toast.error(error.message);
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
         }
         setEditInfoStatus('done');
     };
@@ -203,6 +204,15 @@ const EditMovie = () => {
         }
     };
 
+    const getType = (type) => {
+        switch (type.toLowerCase()) {
+            case 'movie':
+                return 'Phim lẻ';
+            default:
+                return 'Phim dài tập';
+        }
+    };
+
     return (
         <div className={cs('movie')}>
             {loading ? (
@@ -227,15 +237,25 @@ const EditMovie = () => {
                                 </Col>
                             </Row>
                             <Row>
-                                {/* <Col>
+                                <Col>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Danh mục</Form.Label>
-                                        <Form.Select {...register('Type', { value: movieInfo.Type })}>
-                                            <option value="MOVIE">Phim Lẻ</option>
-                                            <option value="SERIES">Phim Dài Tập</option>
-                                        </Form.Select>
+                                        <Form.Control readOnly type="text" defaultValue={getType(movieInfo.Type)} />
                                     </Form.Group>
-                                </Col> */}
+                                </Col>
+                                <Col>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Tổng số tập</Form.Label>
+                                        <Form.Control
+                                            required
+                                            type="number"
+                                            min="1"
+                                            {...register('TotalEpisodes', {
+                                                value: movieInfo.TotalEpisodes || 1,
+                                            })}
+                                        />
+                                    </Form.Group>
+                                </Col>
                                 <Col>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Thể Loại</Form.Label>

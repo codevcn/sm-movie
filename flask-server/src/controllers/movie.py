@@ -13,6 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models.movie_genres import MovieGenres
 
 from services.train_model import (train_knn_model,predict_knn,train_svd_model)
+
 def create():
     try:
         data = request.get_json()
@@ -63,7 +64,6 @@ def update(movie_id):
     data = request.get_json()
     genre_ids = data.get("genre_ids", None)
     movie_info = data.get("movie_info", None)
-
     if not movie_id or not genre_ids or not movie_info:
         return (
             jsonify(
@@ -79,6 +79,13 @@ def update(movie_id):
         movie_query = Movies.query.filter_by(Id=movie_id)
         movie = movie_query.first()
 
+
+        episodes_count = Episodes.query.filter_by(MovieId=movie_id).count()
+        if int(movie_info['TotalEpisodes']) < episodes_count:
+            return (
+                jsonify({"success": False, "message": "Tổng số tập phim không được nhỏ hơn số tập hiện tại đã có"}),
+                400,
+            )
         # delete before adding genres
         MovieGenres.query.filter_by(MovieId=movie_id).delete(synchronize_session=False)
         # add genres
@@ -191,7 +198,7 @@ def get_all_movies():
             query = query.filter(Movies.Type == category)
 
         movies = (
-            query.order_by(Movies.ReleaseDate.desc())
+            query.order_by(Movies.CreatedAt.desc())
             .offset((curr_page - 1) * limit)
             .limit(limit)
             .all()

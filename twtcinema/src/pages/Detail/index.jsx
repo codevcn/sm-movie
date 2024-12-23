@@ -18,7 +18,7 @@ export const MovieCard = ({ genres, movieDetail, getMovieDetail, canWatchNow,eps
     const navigate = useNavigate();
     const [userFavoriteMovies, setUserFavoriteMovies] = useState();
     const [ratingData, setRatingData] = useState(0);
-    console.log('>>>movieDetail:', movieDetail);
+    console.log('>>> movie card:', movieDetail);
 
     const { PosterPath, Country, ReleaseDate, Language, Viewed, Type, Name, Id, rating, TotalEpisodes } = movieDetail;
     const greaterThan0 = ratingData > 0;

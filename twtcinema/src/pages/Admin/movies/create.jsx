@@ -235,6 +235,18 @@ const CreateMovie = () => {
                             </Form.Select>
                         </Form.Group>
                     </Col>
+                    <Col>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Tổng số tập</Form.Label>
+                            <Form.Control
+                                readOnly={movieInfo.type.toLowerCase() === 'movie'}
+                                required
+                                type="number"
+                                min="1"
+                                {...register('TotalEpisodes', { value: 1 })}
+                            />
+                        </Form.Group>
+                    </Col>
                 </Row>
                 <Row>
                     <Col>

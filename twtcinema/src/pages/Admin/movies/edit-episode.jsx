@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp, faRotate, faEye } from '@fortawesome/free-solid-svg-icons';
-import { getEpisodes, uploadEpisode, editEpisode } from '../../../apiService/episode';
+import { faCloudArrowUp, faRotate, faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { getEpisodes, uploadEpisode, editEpisode, deleteEpisode } from '../../../apiService/episode';
 import React from 'react';
 import './Edit-episode.scss';
 import { toast } from 'react-toastify';
@@ -93,15 +93,37 @@ const EpisodePreview = ({ epSource, epNum }) => {
     );
 };
 
+const DeleteEpisode = ({ epId, setEpisodes }) => {
+    const deletEpHandler = async () => {
+        try {
+            await deleteEpisode(epId);
+            toast.success('Xóa thành công.');
+            setEpisodes((pre) => pre.filter((ep) => ep.Id !== epId));
+        } catch (error) {
+            console.error('>>> error:', error);
+            const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(msg);
+        }
+    };
+
+    return (
+        <label className="preview-ep-btn" onClick={deletEpHandler}>
+            <FontAwesomeIcon icon={faTrash} className="preview-ep-icon" />
+            <span>Xóa tập phim</span>
+        </label>
+    );
+};
+
 export const UploadEpisodes = ({ movieDetail }) => {
     const [episodes, setEpisodes] = useState([]);
     const [uploadNewEpLoading, setUploadNewEpLoading] = useState(false);
     const [changeVideoLoading, setChangeVideoLoading] = useState(false);
+    const uploadInputRef = useRef();
 
     const episodes_len = (episodes && episodes.length) || 0;
     const nextEpNum = episodes_len > 0 ? episodes[episodes_len - 1].EpisodeNumber + 1 : 1;
 
-    const { Id } = movieDetail;
+    const { Id, TotalEpisodes } = movieDetail;
     const movieType = movieDetail.Type.toLowerCase();
     console.log('>>> stuff:', { movieDetail, episodes, movieType });
 
@@ -135,13 +157,15 @@ export const UploadEpisodes = ({ movieDetail }) => {
                 data = await uploadEpisode(formData);
             } catch (error) {
                 console.error('>>> error:', error);
-                toast.error('Tải lên tập phim thất bại.');
+                const msg = error.response?.data?.message || 'Có lỗi xảy ra';
+                toast.error(msg);
             }
             if (data && data.episode) {
                 toast.success('Tải lên tập phim thành công!');
                 setEpisodes((pre) => [...pre, data.episode]);
             }
             setUploadNewEpLoading(false);
+            uploadInputRef.current.value = null;
         }
     };
 
@@ -176,12 +200,19 @@ export const UploadEpisodes = ({ movieDetail }) => {
 
     return (
         <div className="upload-eps-section">
-            <input type="file" id="upload-new-ep-input" accept="video/*" hidden onChange={uploadNewEpisode} />
+            <input
+                ref={uploadInputRef}
+                type="file"
+                id="upload-new-ep-input"
+                accept="video/*"
+                hidden
+                onChange={uploadNewEpisode}
+            />
             <h2 className="upload-eps-title">Tải lên các tập phim</h2>
             <div className="eps-list">
                 {episodes &&
                     episodes.length > 0 &&
-                    episodes.map(({ Id, Source, EpisodeNumber }) => (
+                    episodes.map(({ Id, Source, EpisodeNumber }, index) => (
                         <React.Fragment key={Id}>
                             <div key={Id} className="ep-container">
                                 <span className="ep-text">Tập</span>
@@ -211,26 +242,28 @@ export const UploadEpisodes = ({ movieDetail }) => {
                                     )}
                                 </label>
                                 <EpisodePreview epSource={Source} epNum={EpisodeNumber} />
+                                {episodes_len - 1 === index && <DeleteEpisode epId={Id} setEpisodes={setEpisodes} />}
                             </div>
                         </React.Fragment>
                     ))}
 
-                {(movieType === 'series' || (movieType === 'movie' && episodes_len === 0)) && (
-                    <label className="ep-picker" htmlFor="upload-new-ep-input">
-                        <div className="upload-icon-wrapper">
-                            {uploadNewEpLoading ? (
-                                <Spinner animation="border" className="spinner">
-                                    <span className="visually-hidden">Loading...</span>
-                                </Spinner>
-                            ) : (
-                                <FontAwesomeIcon icon={faCloudArrowUp} className="upload-icon" />
-                            )}
-                        </div>
-                        <div className="ep-number-value">
-                            {(uploadNewEpLoading ? 'Đang tải lên tập ' : 'Tải lên tập ') + nextEpNum}
-                        </div>
-                    </label>
-                )}
+                {(movieType === 'series' || (movieType === 'movie' && episodes_len === 0)) &&
+                    episodes_len < TotalEpisodes && (
+                        <label className="ep-picker" htmlFor="upload-new-ep-input">
+                            <div className="upload-icon-wrapper">
+                                {uploadNewEpLoading ? (
+                                    <Spinner animation="border" className="spinner">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </Spinner>
+                                ) : (
+                                    <FontAwesomeIcon icon={faCloudArrowUp} className="upload-icon" />
+                                )}
+                            </div>
+                            <div className="ep-number-value">
+                                {(uploadNewEpLoading ? 'Đang tải lên tập ' : 'Tải lên tập ') + nextEpNum}
+                            </div>
+                        </label>
+                    )}
             </div>
         </div>
     );

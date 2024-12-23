@@ -19,3 +19,7 @@ export const getEpisodeData = async (movieId, epNum) => {
 export const editEpisode = async (ep_id, formData) => {
     return instance.post('/episode/edit-ep/' + ep_id, formData);
 };
+
+export const deleteEpisode = async (ep_id) => {
+    return instance.delete('/episode/delete-ep/' + ep_id);
+};

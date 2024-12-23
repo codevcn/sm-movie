@@ -3,6 +3,7 @@ from cloudinary.uploader import upload_large
 from io import BytesIO
 from models.episodes import Episodes
 from models.movies import Movies
+from models.watch_history import WatchHistory
 import mimetypes
 from configs.db_connect import db
 
@@ -29,36 +30,48 @@ def upload_video(file):
 def upload_episode():
     files = request.files
     if "file" not in files:
-        return jsonify({"error": "Không tìm thấy file"}), 400
+        return jsonify({"message": "Không tìm thấy file"}), 400
 
     file = files["file"]
 
     if file.filename == "":
-        return jsonify({"error": "Không tìm thấy file"}), 400
+        return jsonify({"message": "Không tìm thấy file"}), 400
 
     # Xác thực định dạng tệp
     if not is_valid_video(file):
         return (
-            jsonify({"error": "File không hợp lệ, chỉ chấp nhận file MP4 hoặc WebM."}),
+            jsonify({"message": "File không hợp lệ, chỉ chấp nhận file MP4 hoặc WebM."}),
             400,
         )
-
+    payload = request.form
+    movie_id = payload["movie_id"]    
+    movie = Movies.query.filter_by(Id=movie_id).first()
+    if not movie:
+        return (
+            jsonify({"message": "Không tồn tại phim này"}),
+            404,
+        )
+    
+    episodes_len = Episodes.query.filter_by(MovieId=movie_id).count()
+    if episodes_len == movie.TotalEpisodes :
+        return (
+                jsonify({"message": "Đã đủ số lượng tập."}),
+                400,
+            )
     try:
         result = upload_video(file)
         ep_url = result["secure_url"]
-        payload = request.form
-        movie_id = payload["movie_id"]
+        
+        
         episode = Episodes(
             MovieId=movie_id, Source=ep_url, EpisodeNumber=payload["ep_num"]
         )
         db.session.add(episode)
-        movie = Movies.query.filter_by(Id=movie_id).first()
-        movie.TotalEpisodes += 1
         db.session.commit()
         return jsonify({"url": ep_url, "episode": episode.to_dict()}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"message": str(e)}), 500
 
 
 def get_all_episodes(movie_id):
@@ -147,3 +160,27 @@ def edit_ep(ep_id):
         )
     except Exception as e:
         return jsonify({"error": str(e)})
+
+def delete_ep(ep_id):
+    try:
+        ep=Episodes.query.filter_by(Id=ep_id).first()
+        if not ep:
+            return jsonify({
+                "success":False,
+                "message":"Tập phim không tồn tại"
+            }),404
+        WatchHistory.query.filter_by(EpisodeId=ep_id).delete()
+        Episodes.query.filter_by(Id=ep_id).delete()
+        db.session.commit()
+        return jsonify({
+            "success":True,
+            "message":"Xóa thành công."
+        })
+    except Exception as e:
+        print('>>> error delete_ep:',e)
+        db.session.rollback()
+        return jsonify({
+            "success":False,
+            "message":"Có lỗi xảy ra"
+        })
+    

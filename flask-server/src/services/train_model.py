@@ -18,7 +18,7 @@ import numpy as np
 from sqlalchemy.orm import joinedload
 import joblib
 from flask import request, jsonify
-
+from datetime import datetime
 
 def train_knn_model():
     try:
@@ -91,10 +91,16 @@ def train_knn_model():
 
             # Thêm thông tin về Type vào vector (One-Hot Encoding)
             movie_vector.extend(type_vector)
-
+            
+            release_date = movie.ReleaseDate
+            myDate = None
+            if isinstance(release_date, str):
+                date_obj = datetime.strptime(release_date, "%Y-%m-%d").date()
+                myDate =  date_obj.year
+            else:
+                myDate = release_date.year
             # Thêm thông tin về ReleaseYear vào vector (Chỉ lấy năm)
-            movie_vector.append(movie.ReleaseDate.year)
-
+            movie_vector.append(myDate)
             # Lưu lại vector và ID phim
             movie_vectors.append(movie_vector)
             movie_ids.append(movie.Id)
@@ -110,7 +116,7 @@ def train_knn_model():
         joblib.dump(movie_vectors, "src/storage/models/movie_vectors.pkl")
         joblib.dump(movie_ids, "src/storage/models/movie_ids.pkl")
     except Exception as e:
-        print(f"Error connecting to the database: {e}")
+        print(f"Có lỗi: {e}")
 
 
 def predict_knn(user_id, n_neighbors=10):
